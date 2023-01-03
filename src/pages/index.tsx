@@ -38,20 +38,30 @@ const Home: NextPage = () => {
           <div className="grid grid-cols-1">
             <div className="text-white">
               {movies && movies.isSuccess && movies.data.map(movie => (
-                <div>{JSON.stringify(movie)}</div>
+                <div key={movie.id}>
+                  <div className="card w-48 bg-base-100 shadow-xl">
+                    <figure><img src={`https://image.tmdb.org/t/p/w200${movie.poster_path}`} alt={movie.title} /></figure>
+                    <div className="card-body">
+                      <h2 className="card-title">{movie.title}</h2>
+                      {!!movie.genres.length && movie.genres.map(genre => (
+                        <div key={genre} className="rounded-full bg-violet-500 text-center">{genre}</div>
+                      ))}
+                      <div className="card-actions justify-end">
+                        <button className="btn btn-primary">View</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               ))}
             </div>
-            <Link 
+            <Link
               className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20"
               href="/add"
             >
-              + 
+              +
             </Link>
           </div>
           <div className="flex flex-col items-center gap-2">
-            <p className="text-2xl text-white">
-              {hello.data ? hello.data.greeting : "Loading tRPC query..."}
-            </p>
             <AuthShowcase />
           </div>
         </div>
