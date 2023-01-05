@@ -36,7 +36,7 @@ const Home: NextPage = () => {
             </Link>
           </div>
           <div className="grid grid-cols-1">
-            <div className="text-white">
+            <div className="grid grid-cols-3 gap-10 text-white">
               {movies && movies.isSuccess && movies.data.map(movie => (
                 <div key={movie.id}>
                   <div className="card w-48 bg-base-100 shadow-xl">
@@ -47,7 +47,7 @@ const Home: NextPage = () => {
                         <div key={genre} className="rounded-full bg-violet-500 text-center">{genre}</div>
                       ))}
                       <div className="card-actions justify-end">
-                        <button className="btn btn-primary">View</button>
+                        <Link href={`/m/${movie.id}`} className="btn btn-primary">View </Link>
                       </div>
                     </div>
                   </div>
