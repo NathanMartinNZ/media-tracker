@@ -18,9 +18,9 @@ export const moviesRouter = createTRPCRouter({
   getMovieById: publicProcedure.input(Number).query(({ input, ctx }) => {
     return ctx.prisma.movie.findUnique({
       where: {
-        id: input
-      }
-    })
+        id: input,
+      },
+    });
   }),
 
   getSecretMessage: protectedProcedure.query(() => {

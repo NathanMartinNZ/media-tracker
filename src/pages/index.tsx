@@ -1,13 +1,14 @@
 import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
+import Image from "next/image";
 import { signIn, signOut, useSession } from "next-auth/react";
 
 import { api } from "../utils/api";
 
 const Home: NextPage = () => {
   const hello = api.example.hello.useQuery({ text: "from tRPC" });
-  const movies = api.movies.getAll.useQuery()
+  const movies = api.movies.getAll.useQuery();
 
   return (
     <>
@@ -26,33 +27,53 @@ const Home: NextPage = () => {
               className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
               href="/movies"
             >
-              <h3 className="text-2xl font-bold text-center">Movies</h3>
+              <h3 className="text-center text-2xl font-bold">Movies</h3>
             </Link>
             <Link
               className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
               href="/shows"
             >
-              <h3 className="text-2xl font-bold text-center">TV Shows</h3>
+              <h3 className="text-center text-2xl font-bold">TV Shows</h3>
             </Link>
           </div>
           <div className="grid grid-cols-1">
             <div className="grid grid-cols-3 gap-10 text-white">
-              {movies && movies.isSuccess && movies.data.map(movie => (
-                <div key={movie.id}>
-                  <div className="card w-48 bg-base-100 shadow-xl">
-                    <figure><img src={`https://image.tmdb.org/t/p/w200${movie.poster_path}`} alt={movie.title} /></figure>
-                    <div className="card-body">
-                      <h2 className="card-title">{movie.title}</h2>
-                      {!!movie.genres.length && movie.genres.map(genre => (
-                        <div key={genre} className="rounded-full bg-violet-500 text-center">{genre}</div>
-                      ))}
-                      <div className="card-actions justify-end">
-                        <Link href={`/m/${movie.id}`} className="btn btn-primary">View </Link>
+              {movies &&
+                movies.isSuccess &&
+                movies.data.map((movie) => (
+                  <div key={movie.id}>
+                    <div className="card w-48 bg-base-100 shadow-xl">
+                      <figure>
+                        <Image
+                          src={`https://image.tmdb.org/t/p/w200${movie.poster_path}`}
+                          alt={movie.title}
+                          width="200"
+                          height="300"
+                        />
+                      </figure>
+                      <div className="card-body">
+                        <h2 className="card-title">{movie.title}</h2>
+                        {!!movie.genres.length &&
+                          movie.genres.map((genre) => (
+                            <div
+                              key={genre}
+                              className="rounded-full bg-violet-500 text-center"
+                            >
+                              {genre}
+                            </div>
+                          ))}
+                        <div className="card-actions justify-end">
+                          <Link
+                            href={`/m/${movie.id}`}
+                            className="btn-primary btn"
+                          >
+                            View{" "}
+                          </Link>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
             </div>
             <Link
               className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20"
@@ -77,7 +98,7 @@ const AuthShowcase: React.FC = () => {
 
   const { data: secretMessage } = api.example.getSecretMessage.useQuery(
     undefined, // no input
-    { enabled: sessionData?.user !== undefined },
+    { enabled: sessionData?.user !== undefined }
   );
 
   return (
