@@ -12,6 +12,11 @@ export const mediaPage = () => {
   }
   const movie = api.movies.getMovieById.useQuery(mediaId);
 
+  const displayYear = (date: string) => {
+    const d = new Date(date);
+    return d.getFullYear();
+  };
+
   if (!movie.data) {
     return (
       <main className="flex min-h-screen flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c]"></main>
@@ -27,40 +32,45 @@ export const mediaPage = () => {
       </Head>
       <main className="flex min-h-screen flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
         <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
-          <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
-            {movie.data.title}
-          </h1>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
             <Link
               className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
               href="/"
             >
-              <h3 className="text-center text-2xl font-bold">Back</h3>
+              <h3 className="text-center text-2xl font-bold">Homepage</h3>
             </Link>
           </div>
-          <div>
-            <div>
+          <div className="max-w-xl lg:flex lg:max-w-3xl lg:flex-row lg:gap-8">
+            <div className="flex justify-center lg:flex-none">
               <Image
                 src={`https://image.tmdb.org/t/p/w200${movie.data.poster_path}`}
                 alt={movie.data.title}
                 width="200"
                 height="300"
+                className="mb-4 lg:mb-0"
               />
-              <div>
-                <h2>
-                  {movie.data.title} ({movie.data.release_date})
-                </h2>
+            </div>
+            <div className="flex flex-col gap-4">
+              <h1 className="text-3xl font-medium text-white lg:text-5xl">
+                {movie.data.title}{" "}
+                <span className="font-light">
+                  ({displayYear(movie.data.release_date)})
+                </span>
+              </h1>
+              <div className="flex flex-row gap-2">
                 {!!movie.data.genres.length &&
                   movie.data.genres.map((genre) => (
                     <div
                       key={genre}
-                      className="rounded-full bg-violet-500 text-center"
+                      className="rounded-full bg-violet-500 px-2 text-center text-white"
                     >
                       {genre}
                     </div>
                   ))}
-                <span>{movie.data.runtime}mins</span>
-                <div>{movie.data.overview}</div>
+              </div>
+              <span>{movie.data.runtime} mins</span>
+              <div>{movie.data.overview}</div>
+              <div className="grow-0">
                 <button className="btn">Not watched</button>
               </div>
             </div>
