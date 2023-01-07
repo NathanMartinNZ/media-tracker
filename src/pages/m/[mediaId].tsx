@@ -17,9 +17,10 @@ export const mediaPage = () => {
     return d.getFullYear();
   };
 
-  const handleWatched = async (watched:Boolean) => {
+  const handleWatched = async (watched:boolean) => {
+    if(!movie.data) { return } 
     // Update movie in DB to watched
-    await movieWatchedMutation.mutateAsync({ id: movie.data?.id, watched: watched })
+    await movieWatchedMutation.mutateAsync({ id: movie.data.id, watched: watched })
     // Refetch movie to get correct watched state
     movie.refetch()
   }
