@@ -1,5 +1,4 @@
 import { z } from "zod";
-
 import { createTRPCRouter, publicProcedure, protectedProcedure } from "../trpc";
 
 export const moviesRouter = createTRPCRouter({
@@ -23,7 +22,16 @@ export const moviesRouter = createTRPCRouter({
     });
   }),
 
-  getSecretMessage: protectedProcedure.query(() => {
-    return "you can now see this secret message!";
-  }),
+  setMovieWatchedById: publicProcedure
+    .input(z.object({ id: z.number(), watched: z.boolean() }))
+    .mutation(({ input, ctx }) => {
+      return ctx.prisma.movie.update({
+        where: {
+          id: input.id
+        },
+        data: {
+          watched: input.watched
+        }
+      })
+    })
 });

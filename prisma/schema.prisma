@@ -36,6 +36,7 @@ model Movie {
     status              String
     tagline             String?
     title               String
+    watched             Boolean     @default(false)
 }
 
 // Necessary for Next auth

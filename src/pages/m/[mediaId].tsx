@@ -3,19 +3,26 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { api } from "../../utils/api";
+import { useState, useEffect } from "react";
 
 export const mediaPage = () => {
   const router = useRouter();
   const mediaId = parseInt(router.query.mediaId as string, 10);
-  if (!mediaId) {
-    return;
-  }
+  if (!mediaId) { return }
   const movie = api.movies.getMovieById.useQuery(mediaId);
+  const movieWatchedMutation = api.movies.setMovieWatchedById.useMutation()
 
   const displayYear = (date: string) => {
     const d = new Date(date);
     return d.getFullYear();
   };
+
+  const handleWatched = async (watched:Boolean) => {
+    // Update movie in DB to watched
+    await movieWatchedMutation.mutateAsync({ id: movie.data?.id, watched: watched })
+    // Refetch movie to get correct watched state
+    movie.refetch()
+  }
 
   if (!movie.data) {
     return (
@@ -71,7 +78,12 @@ export const mediaPage = () => {
               <span>{movie.data.runtime} mins</span>
               <div>{movie.data.overview}</div>
               <div className="grow-0">
-                <button className="btn">Not watched</button>
+                {movie.data.watched ? (
+                  <button className="btn bg-purple-800 hover:bg-purple-900" onClick={() => handleWatched(false)}>Watched ✓</button>
+                ) : (
+                  <button className="btn" onClick={() => handleWatched(true)}>Not watched</button>
+                )}
+                
               </div>
             </div>
           </div>
