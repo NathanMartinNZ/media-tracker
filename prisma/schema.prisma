@@ -20,8 +20,10 @@ model Example {
     updatedAt DateTime @updatedAt
 }
 
+// MOVIE SCHEMA
 model Movie {
     id                  Int         @id
+    media_type          String      @default("movie")
     imdb_id             String?
     genres              String[]
     original_language   String
@@ -36,6 +38,29 @@ model Movie {
     status              String
     tagline             String?
     title               String
+    watched             Boolean     @default(false)
+}
+
+// TV SHOW SCHEMA
+model Show {
+    id                  Int         @id
+    media_type          String      @default("show")
+    genres              String[]
+    original_language   String
+    overview            String?
+    popularity          Float
+    backdrop_path       String?
+    poster_path         String?
+    first_air_date      String
+    last_air_date       String
+    spoken_languages    String[]
+    status              String
+    tagline             String?
+    title               String      @default("")
+    networks            String[]
+    number_of_episodes  Int
+    number_of_seasons   Int
+    seasons             Int[]
     watched             Boolean     @default(false)
 }
 

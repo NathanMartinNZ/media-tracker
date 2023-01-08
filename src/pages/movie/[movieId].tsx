@@ -5,11 +5,11 @@ import { useRouter } from "next/router";
 import { api } from "../../utils/api";
 import { useState, useEffect } from "react";
 
-export const mediaPage = () => {
+export const moviePage = () => {
   const router = useRouter();
-  const mediaId = parseInt(router.query.mediaId as string, 10);
-  if (!mediaId) { return }
-  const movie = api.movies.getMovieById.useQuery(mediaId);
+  const movieId = parseInt(router.query.movieId as string, 10);
+  if (!movieId) { return }
+  const movie = api.movies.getMovieById.useQuery(movieId);
   const movieWatchedMutation = api.movies.setMovieWatchedById.useMutation()
 
   const displayYear = (date: string) => {
@@ -98,7 +98,7 @@ export const mediaPage = () => {
 // export async function getStaticPaths() {
 //   const movies = await prisma.movie.findMany()
 //   const paths = movies.map(movie => ({
-//     params: { mediaId: movie.id.toString()}
+//     params: { movieId: movie.id.toString()}
 //   }))
 //   return {
 //     paths: paths,
@@ -107,7 +107,7 @@ export const mediaPage = () => {
 // }
 
 // export async function getStaticProps(ctx:any) {
-//   const movieId = parseInt(ctx.params.mediaId)
+//   const movieId = parseInt(ctx.params.movieId)
 //   const movie = await prisma.movie.findUnique({
 //     where: {
 //       id: movieId
@@ -119,4 +119,4 @@ export const mediaPage = () => {
 //   }
 // }
 
-export default mediaPage;
+export default moviePage;

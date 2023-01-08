@@ -5,10 +5,20 @@ import Image from "next/image";
 import { signIn, signOut, useSession } from "next-auth/react";
 
 import { api } from "../utils/api";
+import { Movie, Show } from "@prisma/client";
 
 const Home: NextPage = () => {
-  const hello = api.example.hello.useQuery({ text: "from tRPC" });
-  const movies = api.movies.getAll.useQuery();
+  const movies = api.movies.getAll.useQuery()
+  const shows = api.shows.getAll.useQuery()
+
+
+  const getUrl = (media:Movie|Show) => {
+    if(media.media_type == "movie") {
+      return `/movie/${media.id}`
+    } else {
+      return `/show/${media.id}`
+    }
+  }
 
   return (
     <>
@@ -39,22 +49,24 @@ const Home: NextPage = () => {
           <div className="grid grid-cols-1">
             <div className="grid grid-cols-3 gap-10 text-white">
               {movies &&
+                shows && 
                 movies.isSuccess &&
-                movies.data.map((movie) => (
-                  <div key={movie.id}>
+                shows.isSuccess && 
+                [...movies.data, ...shows.data].map((media) => (
+                  <div key={media.id}>
                     <div className="card w-48 bg-base-100 shadow-xl">
                       <figure>
                         <Image
-                          src={`https://image.tmdb.org/t/p/w200${movie.poster_path}`}
-                          alt={movie.title}
+                          src={`https://image.tmdb.org/t/p/w200${media.poster_path}`}
+                          alt={media.title}
                           width="200"
                           height="300"
                         />
                       </figure>
                       <div className="card-body">
-                        <h2 className="card-title">{movie.title}</h2>
-                        {!!movie.genres.length &&
-                          movie.genres.map((genre) => (
+                        <h2 className="card-title">{media.title}</h2>
+                        {!!media.genres.length &&
+                          media.genres.map((genre) => (
                             <div
                               key={genre}
                               className="rounded-full bg-violet-500 text-center"
@@ -64,7 +76,7 @@ const Home: NextPage = () => {
                           ))}
                         <div className="card-actions justify-end">
                           <Link
-                            href={`/m/${movie.id}`}
+                            href={getUrl(media)}
                             className="btn-primary btn"
                           >
                             View{" "}
