@@ -44,6 +44,7 @@ model Movie {
 // TV SHOW SCHEMA
 model Show {
     id                  Int         @id
+    seasons             Season[]
     media_type          String      @default("show")
     genres              String[]
     original_language   String
@@ -60,7 +61,34 @@ model Show {
     networks            String[]
     number_of_episodes  Int
     number_of_seasons   Int
-    seasons             Int[]
+    watched             Boolean     @default(false)
+}
+
+// TV SHOW SEASON SCHEMA
+model Season {
+    id                  Int         @id
+    show                Show        @relation(fields: [show_id], references: [id])
+    show_id             Int
+    episodes            Episode[]
+    media_type          String      @default("season")
+    overview            String?
+    poster_path         String?
+    air_date            String
+    title               String      @default("")
+    season_number       Int
+}
+
+// TV SHOW EPISODE SCHEMA
+model Episode {
+    id                  Int         @id
+    season              Season      @relation(fields: [season_id], references: [id])
+    season_id           Int
+    media_type          String      @default("episode")
+    overview            String?
+    still_path          String?
+    air_date            String
+    title               String      @default("")
+    episode_number      Int
     watched             Boolean     @default(false)
 }
 
