@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { api } from "../../utils/api";
 import { useState, useEffect } from "react";
+import Season from "../../components/Season";
 
 export const showPage = () => {
   const router = useRouter();
@@ -11,6 +12,7 @@ export const showPage = () => {
   if (!showId) { return }
   const show = api.shows.getShowById.useQuery(showId);
   const showWatchedMutation = api.shows.setShowWatchedById.useMutation()
+  const seasons = api.seasons.getSeasonsByShowId.useQuery(showId)
 
   const displayYear = (date: string) => {
     const d = new Date(date);
@@ -82,9 +84,13 @@ export const showPage = () => {
                 ) : (
                   <button className="btn" onClick={() => handleWatched(true)}>Not watched</button>
                 )}
-                
               </div>
             </div>
+          </div>
+          <div className="max-w-xl lg:flex lg:max-w-3xl lg:flex-row lg:gap-8">
+            {seasons.data && seasons.data.map(season => (
+              <Season season={season} />
+            ))}
           </div>
         </div>
       </main>
