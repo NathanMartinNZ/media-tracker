@@ -4,28 +4,35 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { api } from "../../utils/api";
 import { useState, useEffect } from "react";
-import Season from "../../components/Season";
+import { Season } from "@prisma/client"
+import SeasonTile from "../../components/SeasonTile";
 
 export const showPage = () => {
   const router = useRouter();
   const showId = parseInt(router.query.showId as string, 10);
-  if (!showId) { return }
-  const show = api.shows.getShowById.useQuery(showId);
-  const showWatchedMutation = api.shows.setShowWatchedById.useMutation()
-  const seasons = api.seasons.getSeasonsByShowId.useQuery(showId)
-
-  const displayYear = (date: string) => {
-    const d = new Date(date);
-    return d.getFullYear();
-  };
-
-  const handleWatched = async (watched:boolean) => {
-    if(!show.data) { return } 
-    // Update movie in DB to watched
-    await showWatchedMutation.mutateAsync({ id: show.data.id, watched: watched })
-    // Refetch movie to get correct watched state
-    show.refetch()
+  if (!showId) {
+    return;
   }
+  const show = api.shows.getShowById.useQuery(showId);
+  const showWatchedMutation = api.shows.setShowWatchedById.useMutation();
+  const seasons = api.seasons.getSeasonsByShowId.useQuery(showId);
+
+  const sortedSeasons = (unsortedSeasons:Season[]) => {
+    return unsortedSeasons.sort((a, b) => (a.season_number > b.season_number) ? 1 : -1)
+  }
+
+  const handleShowWatched = async (watched:boolean) => {
+    if (!show.data) {
+      return;
+    }
+    // Update movie in DB to watched
+    await showWatchedMutation.mutateAsync({
+      id: show.data.id,
+      watched: watched,
+    });
+    // Refetch movie to get correct watched state
+    show.refetch();
+  };
 
   if (!show.data) {
     return (
@@ -51,7 +58,7 @@ export const showPage = () => {
             </Link>
           </div>
           <div className="max-w-xl lg:flex lg:max-w-3xl lg:flex-row lg:gap-8">
-            <div className="flex self-start justify-center lg:flex-none">
+            <div className="flex justify-center self-start lg:flex-none">
               <Image
                 src={`https://image.tmdb.org/t/p/w200${show.data.poster_path}`}
                 alt={show.data.title}
@@ -80,17 +87,23 @@ export const showPage = () => {
               <div>{show.data.overview}</div>
               <div className="grow-0">
                 {show.data.watched ? (
-                  <button className="btn bg-purple-800 hover:bg-purple-900" onClick={() => handleWatched(false)}>Watched ✓</button>
+                  <button
+                    className="btn bg-purple-800 hover:bg-purple-900"
+                    onClick={() => handleShowWatched(false)}
+                  >
+                    Watched ✓
+                  </button>
                 ) : (
-                  <button className="btn" onClick={() => handleWatched(true)}>Not watched</button>
+                  <button className="btn" onClick={() => handleShowWatched(true)}>
+                    Not watched
+                  </button>
                 )}
               </div>
             </div>
           </div>
-          <div className="max-w-xl lg:flex lg:max-w-3xl lg:flex-row lg:gap-8">
-            {seasons.data && seasons.data.map(season => (
-              <Season season={season} />
-            ))}
+          <div className="max-w-xl lg:flex lg:max-w-3xl lg:flex-row lg:flex-wrap lg:gap-8">
+            {seasons.data &&
+              sortedSeasons(seasons.data).map((season) => <SeasonTile season={season} />)}
           </div>
         </div>
       </main>
