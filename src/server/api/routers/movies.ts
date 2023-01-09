@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure, protectedProcedure } from "../trpc";
+import axios from "axios"
 
 export const moviesRouter = createTRPCRouter({
   hello: publicProcedure
@@ -33,5 +34,13 @@ export const moviesRouter = createTRPCRouter({
           watched: input.watched
         }
       })
-    })
+    }),
+  
+  getMoviesBySearchTerm: publicProcedure.input(String).query(({ input }) => {
+    const fetchMovies = async () => {
+      const movies = await axios.get(`https://api.themoviedb.org/3/search/movie?api_key=${process.env.TMDB_CLIENT_API}&language=en-US&page=1&include_adult=false&query=${input}`)
+      return movies.data
+    }
+    return fetchMovies()
+  })
 });

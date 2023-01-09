@@ -103,7 +103,7 @@ export const showPage = () => {
           </div>
           <div className="max-w-xl lg:flex lg:max-w-3xl lg:flex-row lg:flex-wrap lg:gap-8">
             {seasons.data &&
-              sortedSeasons(seasons.data).map((season) => <SeasonTile season={season} />)}
+              sortedSeasons(seasons.data).map((season) => <SeasonTile key={season.id} season={season} />)}
           </div>
         </div>
       </main>
