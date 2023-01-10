@@ -2,13 +2,18 @@ import React, { useState, useEffect } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/router";
 import { api } from "../utils/api";
 
 const Add = () => {
+  const router = useRouter()
+
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedType, setSelectedType] = useState<string>("movie");
   const [searchResults, setSearhResults] = useState<any>();
-  const getResultMovies: any = api.movies.getMoviesBySearchTerm.useQuery(
+
+  const addMovieById = api.movies.addMovieById.useMutation()
+  const getResultMovies = api.movies.getMoviesBySearchTerm.useQuery(
     searchTerm,
     { enabled: false }
   );
@@ -31,7 +36,12 @@ const Add = () => {
     setSearchTerm("");
   };
 
-  const handleAddMovie = (id: number) => {};
+  const handleAddMovie = async (id: number) => {
+    // Add movie to DB
+    await addMovieById.mutateAsync(id)
+    // Redirect to homepage
+    router.push("/")
+  };
 
   return (
     <>
