@@ -10,7 +10,7 @@ const Add = () => {
 
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedType, setSelectedType] = useState<string>("movie");
-  const [searchResults, setSearhResults] = useState<any>();
+  const [searchResults, setSearchResults] = useState<any>();
 
   const addMovieById = api.movies.addMovieById.useMutation()
   const getResultMovies = api.movies.getMoviesBySearchTerm.useQuery(
@@ -18,27 +18,42 @@ const Add = () => {
     { enabled: false }
   );
 
-  useEffect(() => {
-    // Set searchResultData
-    if (getResultMovies.isSuccess) {
-      setSearhResults(() => getResultMovies.data);
-    }
-  }, [getResultMovies]);
+  const addShowById = api.shows.addShowById.useMutation()
+  const getResultShows = api.shows.getShowsBySearchTerm.useQuery(
+    searchTerm,
+    { enabled: false }
+  );
+
+  // useEffect(() => {
+  //   // Set searchResultData
+  //   if (getResultMovies.isSuccess) {
+  //     setSearchResults(() => getResultMovies.data);
+  //   }
+  // }, [getResultMovies]);
 
   const handleSearchSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (searchTerm === "") {
-      return;
+      return
     }
     if (selectedType == "movie") {
-      await getResultMovies.refetch();
+      const res = await getResultMovies.refetch()
+      if(res.isSuccess) { setSearchResults(res.data) }
+    } else if(selectedType == "show") {
+      const res = await getResultShows.refetch()
+      if(res.isSuccess) { setSearchResults(res.data) }
     }
     setSearchTerm("");
   };
 
-  const handleAddMovie = async (id: number) => {
-    // Add movie to DB
-    await addMovieById.mutateAsync(id)
+  const handleAdd = async (id: number) => {
+    // Add to DB
+    if(selectedType === "movie") {
+      await addMovieById.mutateAsync(id)
+    } else if(selectedType === "show") {
+      await addShowById.mutateAsync(id)
+    }
+    console.log(searchResults)
     // Redirect to homepage
     router.push("/")
   };
@@ -87,7 +102,7 @@ const Add = () => {
                     {result.poster_path && (
                       <Image
                         src={`https://image.tmdb.org/t/p/w200${result.poster_path}`}
-                        alt={result.title}
+                        alt={result.title || result.name}
                         width="100"
                         height="150"
                         className="mb-4 lg:mb-0"
@@ -96,16 +111,16 @@ const Add = () => {
                   </div>
                   <div className="flex flex-col gap-4">
                     <h3 className="text-1xl font-medium text-white lg:text-2xl">
-                      {result.title}
+                      {result.title || result.name}
                     </h3>
-                    <div>Air date: {result.release_date}</div>
+                    <div>Air date: {result.release_date || result.first_air_date}</div>
                     <div>{result.overview}</div>
                   </div>
                   <div className="flex flex-col gap-4">
                     <div className="grow-0">
                       <button
                         className="btn bg-purple-600 text-white hover:bg-purple-700"
-                        onClick={() => handleAddMovie(result.id)}
+                        onClick={() => handleAdd(result.id)}
                       >
                         Add
                       </button>
