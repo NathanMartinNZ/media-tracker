@@ -11,13 +11,15 @@ const EpisodeTile = ({
   return (
     <div className="max-w-xl gap-2 lg:flex lg:max-w-3xl lg:flex-row lg:gap-8">
       <div className="flex justify-center self-start lg:flex-none">
-        <Image
-          src={`https://image.tmdb.org/t/p/w200${episode.still_path}`}
-          alt={episode.title}
-          width="100"
-          height="150"
-          className="mb-4 lg:mb-0"
-        />
+        {episode.still_path && (
+          <Image
+            src={`https://image.tmdb.org/t/p/w200${episode.still_path}`}
+            alt={episode.title}
+            width="100"
+            height="150"
+            className="mb-4 lg:mb-0"
+          />
+        )}
       </div>
       <div className="flex flex-col gap-4">
         <h3 className="text-1xl font-medium text-white lg:text-2xl">{episode.title}</h3>

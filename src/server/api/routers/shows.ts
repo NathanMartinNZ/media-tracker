@@ -2,7 +2,7 @@ import { z } from "zod";
 import { createTRPCRouter, publicProcedure, protectedProcedure } from "../trpc";
 import axios from "axios";
 import { Show } from "@prisma/client";
-import { fetchShowData, fetchSeasonsData } from "../helpers/fetchRawData"
+import { fetchShowData, fetchSeasonsAndEpisodesData } from "../helpers/fetchRawData"
 
 export const showsRouter = createTRPCRouter({
   getAll: publicProcedure.query(({ ctx }) => {
@@ -36,7 +36,6 @@ export const showsRouter = createTRPCRouter({
       return shows.data
     }
     const showsData = await fetchShows()
-    console.log(showsData)
     return showsData
   }),
 
@@ -46,16 +45,24 @@ export const showsRouter = createTRPCRouter({
       // Fetch show from TMDB
       const showData:any = await fetchShowData(input)
       // Fetch seasons & episodes from TMDB
-      const seasonsData:any = await fetchSeasonsData(showData.season_numbers, showData.show.id)
+      const seasonsAndEpisodesData:any = await fetchSeasonsAndEpisodesData(showData.season_numbers, showData.show.id)
 
       // Create show
       const createShow = await ctx.prisma.show.create({
         data: showData.show
       })
       // Create all seasons
-      if(seasonsData.length) {
+      console.log(seasonsAndEpisodesData.seasons.length, seasonsAndEpisodesData.episodes.length)
+      if(seasonsAndEpisodesData.seasons.length) {
         await ctx.prisma.season.createMany({
-          data: seasonsData,
+          data: seasonsAndEpisodesData.seasons,
+          skipDuplicates: true
+        })
+      }
+      // Create all episodes
+      if(seasonsAndEpisodesData.episodes.length) {
+        await ctx.prisma.episode.createMany({
+          data: seasonsAndEpisodesData.episodes,
           skipDuplicates: true
         })
       }

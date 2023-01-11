@@ -50,13 +50,15 @@ export const moviePage = () => {
           </div>
           <div className="max-w-xl lg:flex lg:max-w-3xl lg:flex-row lg:gap-8">
             <div className="flex justify-center lg:flex-none">
-              <Image
-                src={`https://image.tmdb.org/t/p/w200${movie.data.poster_path}`}
-                alt={movie.data.title}
-                width="200"
-                height="300"
-                className="mb-4 lg:mb-0"
-              />
+              {movie.data.poster_path && (
+                <Image
+                  src={`https://image.tmdb.org/t/p/w200${movie.data.poster_path}`}
+                  alt={movie.data.title}
+                  width="200"
+                  height="300"
+                  className="mb-4 lg:mb-0"
+                />
+              )}
             </div>
             <div className="flex flex-col gap-4">
               <h1 className="text-3xl font-medium text-white lg:text-5xl">

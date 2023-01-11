@@ -1,6 +1,5 @@
 import axios from "axios"
-import { Season, Show } from "@prisma/client"
-import { seasonsRouter } from "../routers/seasons"
+import { Episode, Season, Show } from "@prisma/client"
 
 const fetchShowData = async (input:number) => {
   // Fetch show from TMDB
@@ -35,10 +34,11 @@ const fetchShowData = async (input:number) => {
   }
 }
 
-const fetchSeasonsData = async ( season_numbers:number[], showId:number) => {
-  if(!season_numbers.length) { return [] }
+const fetchSeasonsAndEpisodesData = async ( season_numbers:number[], showId:number) => {
+  const seasonsArr:Season[] = []
+  const episodesArr:Episode[] = []
 
-  const seasonsArr = season_numbers.map(async (season_number:number) => {
+  for(const season_number of season_numbers) {
     // Fetch seasons & episodes from TMDB
     const res = await axios.get(`https://api.themoviedb.org/3/tv/${showId}/season/${season_number}?api_key=${process.env.TMDB_CLIENT_API}&language=en-US`)
     const seasonRaw = res.data
@@ -55,13 +55,33 @@ const fetchSeasonsData = async ( season_numbers:number[], showId:number) => {
       season_number: seasonRaw.season_number
     }
 
-    return seasonClean
-  })
+    // Push season to array
+    seasonsArr.push(seasonClean)
 
-  return Promise.all(seasonsArr)
+    // Push episodes to array
+    seasonRaw.episodes.forEach((episodeRaw:any) => {
+      const episode:Episode = {
+        id: episodeRaw.id,
+        season_id: seasonRaw.id,
+        media_type: "episode",
+        overview: episodeRaw.overview,
+        still_path: episodeRaw.still_path,
+        air_date: episodeRaw.air_date,
+        title: episodeRaw.name,
+        episode_number: episodeRaw.episode_number,
+        watched: false
+      }
+      episodesArr.push(episode)
+    })
+  }
+
+  return {
+    seasons: seasonsArr,
+    episodes: episodesArr
+  }
 }
 
 export {
   fetchShowData,
-  fetchSeasonsData
+  fetchSeasonsAndEpisodesData
 }
