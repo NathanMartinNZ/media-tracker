@@ -4,14 +4,6 @@ import axios from "axios"
 import { Movie } from "@prisma/client";
 
 export const moviesRouter = createTRPCRouter({
-  hello: publicProcedure
-    .input(z.object({ text: z.string() }))
-    .query(({ input }) => {
-      return {
-        greeting: `Hello ${input.text}`,
-      };
-    }),
-
   getAll: publicProcedure.query(({ ctx }) => {
     return ctx.prisma.movie.findMany();
   }),
@@ -81,8 +73,10 @@ export const moviesRouter = createTRPCRouter({
       }
 
       // Add movie to DB
-      return ctx.prisma.movie.create({
+      const createMovie = await ctx.prisma.movie.create({
         data: movieClean
       })
+
+      return createMovie
     }),
 });
