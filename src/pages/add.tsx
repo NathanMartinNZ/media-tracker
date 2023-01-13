@@ -92,7 +92,7 @@ const Add = () => {
               </button>
             </form>
           </div>
-          <div className="max-w-xl lg:flex lg:max-w-3xl lg:flex-wrap lg:gap-8">
+          <div className="w-full lg:flex lg:max-w-3xl lg:flex-wrap lg:gap-8">
             {searchResults &&
               searchResults.results &&
               searchResults.results.map((result: any) => (

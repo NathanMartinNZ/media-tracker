@@ -40,17 +40,18 @@ const SeasonTile = ({ season }: { season: Season }) => {
   return (
     <>
       <div 
-        className="flex w-full space-x-4 p-4 border rounded-lg shadow-md hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
+        className="flex w-full space-x-4 p-4 cursor-pointer border rounded-lg shadow-md hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
         onClick={handleShowEpisodes}
       >
-        <div className="hidden lg:block">
+        <div className="flex shrink-0 hidden lg:block lg:w-[100px]">
           {season.poster_path && (
             <Image
               src={`https://image.tmdb.org/t/p/w200${season.poster_path}`}
               alt={season.title}
-              width="100"
-              height="150"
-              className="rounded-lg min-w-[100px]"
+              width="0"
+              height="0"
+              sizes="100vw"
+              className="rounded-lg w-[100px] h-auto"
             />
           )}
         </div>

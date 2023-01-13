@@ -17,15 +17,16 @@ const EpisodeTile = ({
   }
 
   return (
-    <div className="flex w-full space-x-4 p-4">
+    <div className="flex w-full lg:space-x-4 p-4">
       <div className="flex shrink-0 hidden lg:block w-[100px]">
         {episode.still_path && (
           <Image
             src={`https://image.tmdb.org/t/p/w200${episode.still_path}`}
             alt={episode.title}
-            width="100"
-            height="150"
-            className="rounded-lg min-w-[100px]"
+            width="0"
+            height="0"
+            sizes="100vw"
+            className="rounded-lg w-[100px] h-auto"
           />
         )}
       </div>
