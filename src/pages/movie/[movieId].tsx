@@ -56,7 +56,7 @@ export const moviePage = () => {
                   alt={movie.data.title}
                   width="200"
                   height="300"
-                  className="mb-4 lg:mb-0"
+                  className="rounded mb-4 lg:mb-0"
                 />
               )}
             </div>
@@ -72,7 +72,7 @@ export const moviePage = () => {
                   movie.data.genres.map((genre) => (
                     <div
                       key={genre}
-                      className="rounded-full bg-violet-500 px-2 text-center text-white"
+                      className="rounded-full bg-violet-500 px-2 text-center text-white text-sm"
                     >
                       {genre}
                     </div>

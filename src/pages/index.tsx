@@ -64,15 +64,6 @@ const Home: NextPage = () => {
                       </figure>
                       <div className="card-body">
                         <h2 className="card-title">{media.title}</h2>
-                        {!!media.genres.length &&
-                          media.genres.map((genre) => (
-                            <div
-                              key={genre}
-                              className="rounded-full bg-violet-500 text-center"
-                            >
-                              {genre}
-                            </div>
-                          ))}
                         <div className="card-actions justify-end">
                           <Link
                             href={getUrl(media)}

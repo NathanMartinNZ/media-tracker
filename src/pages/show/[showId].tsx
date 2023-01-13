@@ -3,9 +3,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { api } from "../../utils/api";
-import { useState, useEffect } from "react";
 import { Season } from "@prisma/client"
 import SeasonTile from "../../components/SeasonTile";
+import { formatDate } from "../../../src/helpers/index"
 
 export const showPage = () => {
   const router = useRouter();
@@ -65,7 +65,7 @@ export const showPage = () => {
                   alt={show.data.title}
                   width="200"
                   height="300"
-                  className="mb-4 lg:mb-0"
+                  className="rounded mb-4 lg:mb-0"
                 />
               )}
             </div>
@@ -78,14 +78,16 @@ export const showPage = () => {
                   show.data.genres.map((genre) => (
                     <div
                       key={genre}
-                      className="rounded-full bg-violet-500 px-2 text-center text-white"
+                      className="rounded-full bg-violet-500 px-2 text-center text-white text-sm"
                     >
                       {genre}
                     </div>
                   ))}
               </div>
-              <span>First air date: {show.data.first_air_date}</span>
-              <span>Last air date: {show.data.last_air_date}</span>
+              <div className="flex flex-col gap-1">
+                <span>First air date: {formatDate(show.data.first_air_date)}</span>
+                <span>Last air date: {formatDate(show.data.last_air_date)}</span>
+              </div>
               <div>{show.data.overview}</div>
               <div className="grow-0">
                 {show.data.watched ? (
@@ -103,7 +105,7 @@ export const showPage = () => {
               </div>
             </div>
           </div>
-          <div className="max-w-xl lg:flex lg:max-w-3xl lg:flex-row lg:flex-wrap lg:gap-8">
+          <div className="w-full flex flex-col lg:flex lg:max-w-3xl lg:flex-row lg:flex-wrap gap-2 lg:gap-4">
             {seasons.data &&
               sortedSeasons(seasons.data).map((season) => <SeasonTile key={season.id} season={season} />)}
           </div>
