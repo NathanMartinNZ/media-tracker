@@ -3,6 +3,7 @@ import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { api } from "../utils/api";
+import AddingShow from "../components/AddingShow/AddingShow";
 
 const Add = () => {
   const router = useRouter();
@@ -10,6 +11,7 @@ const Add = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedType, setSelectedType] = useState<string>("movie");
   const [searchResults, setSearchResults] = useState<any>();
+  const [currentlyAdding, setCurrentlyAdding] = useState<boolean>(false);
 
   const addMovieById = api.movies.addMovieById.useMutation();
   const getResultMovies = api.movies.getMoviesBySearchTerm.useQuery(
@@ -22,11 +24,17 @@ const Add = () => {
     enabled: false,
   });
 
-  const formatDate = (date:string) => {
-    if(!date) { return }
-    const d = new Date(date)
-    return d.toLocaleDateString("en-uk", { year:"numeric", month:"short", day:"numeric"})
-  }
+  const formatDate = (date: string) => {
+    if (!date) {
+      return;
+    }
+    const d = new Date(date);
+    return d.toLocaleDateString("en-uk", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
 
   const handleSearchSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -53,6 +61,8 @@ const Add = () => {
       const res = await addMovieById.mutateAsync(id);
       router.push(`/movie/${res.id}`);
     } else if (selectedType === "show") {
+      // Display loading indicator due to having to load all seasons & episodes
+      setCurrentlyAdding(true);
       const res = await addShowById.mutateAsync(id);
       router.push(`/show/${res.id}`);
     }
@@ -71,16 +81,19 @@ const Add = () => {
             <span className="text-[hsl(280,100%,70%)]">Add Movie or Show</span>
           </h1>
           <div>
-            <form onSubmit={handleSearchSubmit} className="flex lg:flex-row flex-wrap gap-2">
+            <form
+              onSubmit={handleSearchSubmit}
+              className="flex flex-wrap gap-2 lg:flex-row"
+            >
               <input
                 type="search"
-                className="px-3 py-3 rounded"
+                className="rounded px-3 py-3"
                 name="addSearch"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
               <select
-                className="px-3 rounded"
+                className="rounded px-3"
                 value={selectedType}
                 onChange={(e) => setSelectedType(e.target.value)}
               >
@@ -98,25 +111,28 @@ const Add = () => {
               searchResults.results.map((result: any) => (
                 <div
                   key={result.id}
-                  className="relative w-full gap-2 mb-8 lg:flex lg:flex-row lg:gap-8"
+                  className="relative mb-8 w-full gap-2 lg:flex lg:flex-row lg:gap-8"
                 >
-                  <div className="flex w-[100px] self-start lg:flex-none">
+                  <div className="flex shrink-0 hidden lg:block w-[100px]">
                     {result.poster_path && (
                       <Image
                         src={`https://image.tmdb.org/t/p/w200${result.poster_path}`}
                         alt={result.title || result.name}
-                        width="100"
-                        height="150"
-                        className="mb-4 lg:mb-0"
+                        width="0"
+                        height="0"
+                        sizes="100vw"
+                        className="rounded-lg w-[100px] h-auto"
                       />
                     )}
                   </div>
                   <div className="flex flex-col lg:gap-4">
-                    <h3 className="text-1xl font-medium text-white lg:text-2xl lg:mr-8">
+                    <h3 className="text-1xl font-medium text-white lg:mr-8 lg:text-2xl">
                       {result.title || result.name}
                     </h3>
                     <div>
-                      Air date: {formatDate(result.release_date) || formatDate(result.first_air_date)}
+                      Air date:{" "}
+                      {formatDate(result.release_date) ||
+                        formatDate(result.first_air_date)}
                     </div>
                     <div className="hidden lg:block">{result.overview}</div>
                   </div>
@@ -131,6 +147,7 @@ const Add = () => {
                 </div>
               ))}
           </div>
+          {currentlyAdding && <AddingShow />}
         </div>
       </main>
     </>

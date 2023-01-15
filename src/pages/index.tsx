@@ -25,8 +25,8 @@ const Home: NextPage = () => {
         <meta name="description" content="Personal media tracker app" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex h-fit flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
-        <div className="container flex flex-col items-center justify-center gap-10 px-4 py-16 ">
+      <main className="flex h-fit flex-col items-center">
+        <div className="container flex flex-col items-center justify-center gap-10 px-4 py-16">
           <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
             <span className="text-[hsl(280,100%,70%)]">Media</span> Tracker
           </h1>
@@ -46,14 +46,18 @@ const Home: NextPage = () => {
               [...movies.data, ...shows.data].map((media) => (
                 <div key={media.id} className="max-w-[200px]">
                   <div className="card rounded-xl bg-base-100 shadow-xl">
-                    <figure>
-                      <Image
-                        src={`https://image.tmdb.org/t/p/w200${media.poster_path}`}
-                        alt={media.title}
-                        width="200"
-                        height="300"
-                      />
-                    </figure>
+                    {media.poster_path && (
+                      <figure>
+                        <Image
+                          src={`https://image.tmdb.org/t/p/w200${media.poster_path}`}
+                          alt={media.title}
+                          width="0"
+                          height="0"
+                          sizes="100vw"
+                          className="w-[200px] h-auto"
+                        />
+                      </figure>
+                    )}
                     <div className="card-body p-4">
                       <h2 className="card-title text-base md:text-lg">
                         {media.title}
