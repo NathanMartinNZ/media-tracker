@@ -35,8 +35,8 @@ const EpisodeTile = ({
         <div>{episodeNumberDisplay()} Air date: {formatDate(episode.air_date)}</div>
         <div className="hidden lg:block">{episode.overview}</div>
       </div>
-      <div className="w-[100px]">
-        <div className="">
+      <div className="w-[100px] ml-2">
+        <div>
           {episode.watched ? (
             <button
               className="btn bg-purple-800 hover:bg-purple-900"
