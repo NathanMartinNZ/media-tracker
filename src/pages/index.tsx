@@ -26,7 +26,7 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex h-fit flex-col items-center">
-        <div className="container flex flex-col items-center justify-center gap-10 px-4 py-16">
+        <div className="container flex flex-col items-center justify-center gap-8 px-4 py-16">
           <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
             <span className="text-[hsl(280,100%,70%)]">Media</span> Tracker
           </h1>

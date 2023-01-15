@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { api } from "../utils/api";
 import AddingShow from "../components/AddingShow/AddingShow";
+import Link from "next/link";
 
 const Add = () => {
   const router = useRouter();
@@ -12,6 +13,9 @@ const Add = () => {
   const [selectedType, setSelectedType] = useState<string>("movie");
   const [searchResults, setSearchResults] = useState<any>();
   const [currentlyAdding, setCurrentlyAdding] = useState<boolean>(false);
+
+  const moviesAlreadyAdded = api.movies.getAll.useQuery();
+  const showsAlreadyAdded = api.shows.getAll.useQuery();
 
   const addMovieById = api.movies.addMovieById.useMutation();
   const getResultMovies = api.movies.getMoviesBySearchTerm.useQuery(
@@ -68,6 +72,18 @@ const Add = () => {
     }
   };
 
+  const alreadyAdded = (id: number) => {
+    if (!moviesAlreadyAdded.isSuccess || !showsAlreadyAdded.isSuccess) {
+      return false;
+    }
+
+    // Check if movie or show already added to disable button
+    const movieMatch = moviesAlreadyAdded.data.find((movie) => movie.id === id);
+    const showMatch = showsAlreadyAdded.data.find((show) => show.id === id);
+
+    return movieMatch || showMatch;
+  };
+
   return (
     <>
       <Head>
@@ -76,9 +92,17 @@ const Add = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex min-h-screen flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
-        <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
+        <div className="container flex flex-col items-center justify-center gap-8 px-4 pt-8 pb-16">
+          <div className="w-full gap-4 lg:max-w-3xl">
+            <Link
+              className="mx-auto flex w-32 flex-col gap-4 rounded-xl bg-white/10 p-3 text-white hover:bg-white/20 lg:mx-0"
+              href="/"
+            >
+              <h3 className="text-1xl text-center font-bold">Homepage</h3>
+            </Link>
+          </div>
           <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
-            <span className="text-[hsl(280,100%,70%)]">Add Movie or Show</span>
+            <span className="text-[hsl(280,100%,70%)]">Add</span> Movie or Show
           </h1>
           <div>
             <form
@@ -113,7 +137,7 @@ const Add = () => {
                   key={result.id}
                   className="relative mb-8 w-full gap-2 lg:flex lg:flex-row lg:gap-8"
                 >
-                  <div className="flex shrink-0 hidden lg:block w-[100px]">
+                  <div className="flex hidden w-[100px] shrink-0 lg:block">
                     {result.poster_path && (
                       <Image
                         src={`https://image.tmdb.org/t/p/w200${result.poster_path}`}
@@ -121,7 +145,7 @@ const Add = () => {
                         width="0"
                         height="0"
                         sizes="100vw"
-                        className="rounded-lg w-[100px] h-auto"
+                        className="h-auto w-[100px] rounded-lg"
                       />
                     )}
                   </div>
@@ -137,12 +161,22 @@ const Add = () => {
                     <div className="hidden lg:block">{result.overview}</div>
                   </div>
                   <div className="flex-1 gap-4">
-                    <button
-                      className="btn absolute top-0 right-0 bg-purple-600 text-white hover:bg-purple-700"
-                      onClick={() => handleAdd(result.id)}
-                    >
-                      Add
-                    </button>
+                    {alreadyAdded(result.id) ? (
+                      <button
+                        disabled
+                        className="btn absolute top-0 right-0 bg-purple-600 text-white hover:bg-purple-700"
+                        onClick={() => handleAdd(result.id)}
+                      >
+                        Added
+                      </button>
+                    ) : (
+                      <button
+                        className="btn absolute top-0 right-0 bg-purple-600 text-white hover:bg-purple-700"
+                        onClick={() => handleAdd(result.id)}
+                      >
+                        Add
+                      </button>
+                    )}
                   </div>
                 </div>
               ))}
