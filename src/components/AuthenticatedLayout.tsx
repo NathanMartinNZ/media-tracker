@@ -3,7 +3,7 @@ import SignIn from "../components/SignIn";
 
 const AuthenticatedLayout = ({ children }:React.PropsWithChildren) => {
   const { data: session } = useSession()
-  //if(!session) { return <SignIn />}
+  if(!session) { return <SignIn />}
 
   return (
     <div className="flex min-h-screen flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
