@@ -3,6 +3,7 @@ import { moviesRouter } from "./routers/movies";
 import { showsRouter } from "./routers/shows";
 import { episodesRouter } from "./routers/episodes";
 import { seasonsRouter } from "./routers/seasons";
+import { watchedRouter } from "./routers/watched";
 
 /**
  * This is the primary router for your server.
@@ -14,6 +15,7 @@ export const appRouter = createTRPCRouter({
   shows: showsRouter,
   seasons: seasonsRouter,
   episodes: episodesRouter,
+  watched: watchedRouter
 });
 
 // export type definition of API

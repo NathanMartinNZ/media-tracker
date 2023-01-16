@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { api } from "../../utils/api";
 import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
 
 const Loading = () => {
   return (
@@ -14,14 +15,21 @@ const Loading = () => {
 export async function getServerSideProps(ctx: any) {
   return {
     props: {
-      movieId: ctx.params.movieId,
+      movieId: ctx.params.movieId
     },
   };
 }
 
 export const moviePage = ({ movieId }: { movieId: number }) => {
   const movie = api.movies.getMovieById.useQuery(movieId);
-  const movieWatchedMutation = api.movies.setMovieWatchedById.useMutation();
+  const movieWatchedMutation = api.watched.addMovieWatchedById.useMutation();
+  const movieNotWatchedMutation = api.watched.removeMovieWatchedById.useMutation();
+  const { data: session } = useSession()
+  const watchedMovie = api.watched.getWatchedMovieById.useQuery({ movieId: Math.floor(movieId), userId: session?.user?.id || "" })
+
+  if (!movie.data || !session) {
+    return <Loading />;
+  }
 
   const displayYear = (date: string) => {
     const d = new Date(date);
@@ -29,21 +37,25 @@ export const moviePage = ({ movieId }: { movieId: number }) => {
   };
 
   const handleWatched = async (watched: boolean) => {
-    if (!movie.data) {
+    if (!movie.data || !session.user) {
       return;
     }
-    // Update movie in DB to watched
-    await movieWatchedMutation.mutateAsync({
-      id: movie.data.id,
-      watched: watched,
-    });
-    // Refetch movie to get correct watched state
-    movie.refetch();
+    if(!watched) {
+      // Add movie watched for user to DB
+      await movieWatchedMutation.mutateAsync({
+        movieId: movie.data.id,
+        userId: session.user.id,
+      });
+    } else {
+      // Remove movie watched for user from DB
+      await movieNotWatchedMutation.mutateAsync({
+        movieId: movie.data.id,
+        userId: session.user.id,
+      });
+    }
+    // Refetch to get updated watched state
+    watchedMovie.refetch();
   };
-
-  if (!movie.data) {
-    return <Loading />;
-  }
 
   return (
     <>
@@ -101,15 +113,15 @@ export const moviePage = ({ movieId }: { movieId: number }) => {
               <span>{movie.data.runtime} mins</span>
               <div>{movie.data.overview}</div>
               <div className="grow-0">
-                {movie.data.watched ? (
+                {watchedMovie.isSuccess && watchedMovie.data.length ? (
                   <button
                     className="btn bg-purple-800 hover:bg-purple-900"
-                    onClick={() => handleWatched(false)}
+                    onClick={() => handleWatched(true)}
                   >
                     Watched ✓
                   </button>
                 ) : (
-                  <button className="btn" onClick={() => handleWatched(true)}>
+                  <button className="btn" onClick={() => handleWatched(false)}>
                     Not watched
                   </button>
                 )}

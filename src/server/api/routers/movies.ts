@@ -16,19 +16,6 @@ export const moviesRouter = createTRPCRouter({
     });
   }),
 
-  setMovieWatchedById: publicProcedure
-    .input(z.object({ id: z.number(), watched: z.boolean() }))
-    .mutation(({ input, ctx }) => {
-      return ctx.prisma.movie.update({
-        where: {
-          id: input.id
-        },
-        data: {
-          watched: input.watched
-        }
-      })
-    }),
-  
   getMoviesBySearchTerm: publicProcedure.input(String).query(async ({ input }) => {
     const fetchMovies = async () => {
       const movies = await axios.get(`https://api.themoviedb.org/3/search/movie?api_key=${process.env.TMDB_CLIENT_API}&language=en-US&page=1&include_adult=false&query=${input}`)
@@ -68,8 +55,7 @@ export const moviesRouter = createTRPCRouter({
         spoken_languages: movieRaw.spoken_languages.map((lang:any) => lang.iso_639_1),
         status: movieRaw.status,
         tagline: movieRaw.tagline,
-        title: movieRaw.title,
-        watched: false
+        title: movieRaw.title
       }
 
       // Add movie to DB
