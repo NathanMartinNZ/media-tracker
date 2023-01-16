@@ -14,12 +14,6 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model Example {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-}
-
 // MOVIE SCHEMA
 model Movie {
     id                  Int         @id
@@ -38,7 +32,7 @@ model Movie {
     status              String
     tagline             String?
     title               String
-    watched             Boolean     @default(false)
+    watched             WatchedMovie[]
 }
 
 // TV SHOW SCHEMA
@@ -61,7 +55,6 @@ model Show {
     networks            String[]
     number_of_episodes  Int
     number_of_seasons   Int
-    watched             Boolean     @default(false)
 }
 
 // TV SHOW SEASON SCHEMA
@@ -89,7 +82,27 @@ model Episode {
     air_date            String
     title               String      @default("")
     episode_number      Int
-    watched             Boolean     @default(false)
+    watched             WatchedEpisode[]
+}
+
+// WATCHED MOVIE SCHEMA
+model WatchedMovie {
+    id              Int     @id @default(autoincrement())
+    user            User    @relation(fields: [user_id], references: [id])
+    user_id         String     
+    movie           Movie   @relation(fields: [movie_id], references: [id])
+    movie_id        Int
+    timestamp       DateTime
+}
+
+// WATCHED EPISODE SCHEMA
+model WatchedEpisode {
+    id              Int     @id @default(autoincrement())
+    user            User    @relation(fields: [user_id], references: [id])
+    user_id         String     
+    episode         Episode @relation(fields: [episode_id], references: [id])
+    episode_id      Int
+    timestamp       DateTime
 }
 
 // Necessary for Next auth
@@ -127,6 +140,8 @@ model User {
     image         String?
     accounts      Account[]
     sessions      Session[]
+    watched_movies        WatchedMovie[]
+    watched_episodes      WatchedEpisode[]
 }
 
 model VerificationToken {
