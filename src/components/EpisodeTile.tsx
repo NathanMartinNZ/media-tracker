@@ -4,9 +4,11 @@ import { formatDate } from "../helpers/index"
 
 const EpisodeTile = ({
   episode,
+  watchedEpisode,
   handleEpisodeWatched,
 }: {
   episode: Episode;
+  watchedEpisode: boolean;
   handleEpisodeWatched: any;
 }) => {
 
@@ -18,7 +20,7 @@ const EpisodeTile = ({
 
   return (
     <div className="flex w-full lg:space-x-4 p-4">
-      <div className="flex shrink-0 hidden lg:block w-[100px]">
+      <div className="shrink-0 hidden lg:block w-[100px]">
         {episode.still_path && (
           <Image
             src={`https://image.tmdb.org/t/p/w200${episode.still_path}`}
@@ -37,17 +39,17 @@ const EpisodeTile = ({
       </div>
       <div className="w-[100px] ml-2">
         <div>
-          {episode.watched ? (
+          {watchedEpisode ? (
             <button
               className="btn bg-purple-800 hover:bg-purple-900"
-              onClick={() => handleEpisodeWatched(episode.id, false)}
+              onClick={() => handleEpisodeWatched(episode.id, true)}
             >
               Watched ✓
             </button>
           ) : (
             <button
               className="btn"
-              onClick={() => handleEpisodeWatched(episode.id, true)}
+              onClick={() => handleEpisodeWatched(episode.id, false)}
             >
               Not watched
             </button>

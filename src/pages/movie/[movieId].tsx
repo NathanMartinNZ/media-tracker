@@ -5,12 +5,7 @@ import { useRouter } from "next/router";
 import { api } from "../../utils/api";
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-
-const Loading = () => {
-  return (
-    <main className="flex min-h-screen flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c]"></main>
-  );
-};
+import Loading from "../../components/Loading"
 
 export async function getServerSideProps(ctx: any) {
   return {
@@ -21,15 +16,13 @@ export async function getServerSideProps(ctx: any) {
 }
 
 export const moviePage = ({ movieId }: { movieId: number }) => {
+  const { data: session } = useSession()
   const movie = api.movies.getMovieById.useQuery(movieId);
   const movieWatchedMutation = api.watched.addMovieWatchedById.useMutation();
   const movieNotWatchedMutation = api.watched.removeMovieWatchedById.useMutation();
-  const { data: session } = useSession()
   const watchedMovie = api.watched.getWatchedMovieById.useQuery({ movieId: Math.floor(movieId), userId: session?.user?.id || "" })
 
-  if (!movie.data || !session) {
-    return <Loading />;
-  }
+  if (!movie.data || !session) { return <Loading />; }
 
   const displayYear = (date: string) => {
     const d = new Date(date);

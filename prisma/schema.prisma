@@ -69,6 +69,7 @@ model Season {
     air_date            String
     title               String      @default("")
     season_number       Int
+    watched_episodes    WatchedEpisode[]
 }
 
 // TV SHOW EPISODE SCHEMA
@@ -102,6 +103,8 @@ model WatchedEpisode {
     user_id         String     
     episode         Episode @relation(fields: [episode_id], references: [id])
     episode_id      Int
+    season          Season  @relation(fields: [season_id], references: [id])
+    season_id       Int
     timestamp       DateTime  @default(now())
 }
 

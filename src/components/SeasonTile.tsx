@@ -1,15 +1,22 @@
-import { Season } from "@prisma/client";
+import { Season, WatchedEpisode } from "@prisma/client";
 import { Episode } from "@prisma/client";
 import { api } from "../utils/api";
 import Image from "next/image";
 import EpisodeTile from "./EpisodeTile";
 import { useState } from "react";
+import { useSession } from "next-auth/react";
+import Loading from "../components/Loading"
 
 const SeasonTile = ({ season }: { season: Season }) => {
+  const { data: session } = useSession()
   const episodes = api.episodes.getEpisodesBySeasonId.useQuery(season.id);
-  const episodeWatchedMutation = api.episodes.setEpisodeWatchedById.useMutation();
+  const episodeWatchedMutation = api.watched.addEpisodeWatchedById.useMutation();
+  const episodeNotWatchedMutation = api.watched.removeEpisodeWatchedById.useMutation();
+  const watchedEpisodes = api.watched.getWatchedEpisodesBySeasonId.useQuery({ seasonId: Math.floor(season.id), userId: session?.user?.id || "" })
 
   const [ showEpisodes, setShowEpisodes ] = useState<boolean>(false)
+
+  if (!session) { return <Loading />; }
 
   const displayYear = (date: string) => {
     const d = new Date(date);
@@ -21,16 +28,25 @@ const SeasonTile = ({ season }: { season: Season }) => {
   }
 
   const handleEpisodeWatched = async (episodeId: number, watched: boolean) => {
-    if (!episodes) {
+    if (!episodes || !session.user) {
       return;
     }
-    // Update episode in DB to watched
-    await episodeWatchedMutation.mutateAsync({
-      id: episodeId,
-      watched: watched,
-    });
-    // Refetch episodes to get correct watched state
-    episodes.refetch();
+    if(!watched) {
+      // Add episode watched for user to DB
+      await episodeWatchedMutation.mutateAsync({
+        episodeId: episodeId,
+        seasonId: season.id,
+        userId: session.user.id,
+      });
+    } else {
+      // Remove episode watched for user from DB
+      await episodeNotWatchedMutation.mutateAsync({
+        episodeId: episodeId,
+        userId: session.user.id,
+      });
+    }
+    // Refetch episodes to get updated watched state
+    watchedEpisodes.refetch();
   };
 
   const handleShowEpisodes = () => {
@@ -43,7 +59,7 @@ const SeasonTile = ({ season }: { season: Season }) => {
         className="flex w-full space-x-4 p-4 cursor-pointer border rounded-lg shadow-md hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
         onClick={handleShowEpisodes}
       >
-        <div className="flex shrink-0 hidden lg:block lg:w-[100px]">
+        <div className="shrink-0 hidden lg:block lg:w-[100px]">
           {season.poster_path && (
             <Image
               src={`https://image.tmdb.org/t/p/w200${season.poster_path}`}
@@ -69,6 +85,7 @@ const SeasonTile = ({ season }: { season: Season }) => {
             <EpisodeTile
               key={episode.id}
               episode={episode}
+              watchedEpisode={!!watchedEpisodes.data?.filter((watchedEp:WatchedEpisode) => watchedEp.episode_id === episode.id).length}
               handleEpisodeWatched={handleEpisodeWatched}
             />
           ))}
