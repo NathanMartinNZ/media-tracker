@@ -14,8 +14,10 @@ export async function getServerSideProps(ctx: any) {
     },
   };
 }
-
-export const moviePage = ({ movieId }: { movieId: number }) => {
+ 
+export const MoviePage = ({ movieId }: { movieId: number }) => {
+  // const session = await getSession()
+  // console.log(session)
   const { data: session } = useSession()
   const movie = api.movies.getMovieById.useQuery(movieId);
   const movieWatchedMutation = api.watched.addMovieWatchedById.useMutation();
@@ -127,4 +129,4 @@ export const moviePage = ({ movieId }: { movieId: number }) => {
   );
 };
 
-export default moviePage;
+export default MoviePage;

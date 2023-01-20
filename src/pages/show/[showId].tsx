@@ -21,7 +21,7 @@ export async function getServerSideProps(ctx:any) {
   };
 }
 
-export const showPage = ({ showId }:{ showId:number }) => {
+export const ShowPage = ({ showId }:{ showId:number }) => {
   const show = api.shows.getShowById.useQuery(showId);
   const seasons = api.seasons.getSeasonsByShowId.useQuery(showId);
 
@@ -122,4 +122,4 @@ export const showPage = ({ showId }:{ showId:number }) => {
   );
 };
 
-export default showPage;
+export default ShowPage;
