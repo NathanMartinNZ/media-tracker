@@ -7,7 +7,7 @@ const AddingShow = () => {
       <h2 className="text-center text-xl font-semibold text-white">
         Adding show...
       </h2>
-      <p className="w-1/3 text-center text-white">This may take a few seconds, please don't close this page.</p>
+      <p className="w-1/3 text-center text-white">This may take a few seconds, please do not close this page.</p>
     </div>
   );
 };
