@@ -17,19 +17,6 @@ export const showsRouter = createTRPCRouter({
     });
   }),
 
-  setShowWatchedById: publicProcedure
-    .input(z.object({ id: z.number(), watched: z.boolean() }))
-    .mutation(({ input, ctx }) => {
-      return ctx.prisma.show.update({
-        where: {
-          id: input.id
-        },
-        data: {
-          watched: input.watched
-        }
-      })
-    }),
-
   getShowsBySearchTerm: publicProcedure.input(String).query(async ({ input }) => {
     const fetchShows = async () => {
       const shows = await axios.get(`https://api.themoviedb.org/3/search/tv?api_key=${process.env.TMDB_CLIENT_API}&language=en-US&page=1&include_adult=false&query=${input}`)
