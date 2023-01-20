@@ -23,26 +23,12 @@ export async function getServerSideProps(ctx:any) {
 
 export const showPage = ({ showId }:{ showId:number }) => {
   const show = api.shows.getShowById.useQuery(showId);
-  const showWatchedMutation = api.shows.setShowWatchedById.useMutation();
   const seasons = api.seasons.getSeasonsByShowId.useQuery(showId);
 
   const sortedSeasons = (unsortedSeasons: Season[]) => {
     return unsortedSeasons.sort((a, b) =>
       a.season_number > b.season_number ? 1 : -1
     );
-  };
-
-  const handleShowWatched = async (watched: boolean) => {
-    if (!show.data) {
-      return;
-    }
-    // Update movie in DB to watched
-    await showWatchedMutation.mutateAsync({
-      id: show.data.id,
-      watched: watched,
-    });
-    // Refetch movie to get correct watched state
-    show.refetch();
   };
 
   const allEpisodesWatched = () => {
