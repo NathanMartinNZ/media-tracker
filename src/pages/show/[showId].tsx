@@ -45,6 +45,11 @@ export const showPage = ({ showId }:{ showId:number }) => {
     show.refetch();
   };
 
+  const allEpisodesWatched = () => {
+    // TODO: Return true if all episodes are set to watched
+    return false
+  }
+
   if (!show.data) { return <Loading /> }
 
   return (
@@ -103,17 +108,15 @@ export const showPage = ({ showId }:{ showId:number }) => {
               </div>
               <div>{show.data.overview}</div>
               <div className="grow-0">
-                {show.data.watched ? (
+                {allEpisodesWatched() ? (
                   <button
                     className="btn bg-purple-800 hover:bg-purple-900"
-                    onClick={() => handleShowWatched(false)}
                   >
                     Watched ✓
                   </button>
                 ) : (
                   <button
                     className="btn"
-                    onClick={() => handleShowWatched(true)}
                   >
                     Not watched
                   </button>
