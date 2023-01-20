@@ -24,8 +24,7 @@ const fetchShowData = async (input:number) => {
     title: showRaw.name,
     networks: showRaw.networks.map((network:any) => network.name),
     number_of_episodes: showRaw.number_of_episodes,
-    number_of_seasons: showRaw.number_of_seasons,
-    watched: false
+    number_of_seasons: showRaw.number_of_seasons
   }
 
   return {
@@ -68,8 +67,7 @@ const fetchSeasonsAndEpisodesData = async ( season_numbers:number[], showId:numb
         still_path: episodeRaw.still_path,
         air_date: episodeRaw.air_date,
         title: episodeRaw.name,
-        episode_number: episodeRaw.episode_number,
-        watched: false
+        episode_number: episodeRaw.episode_number
       }
       episodesArr.push(episode)
     })

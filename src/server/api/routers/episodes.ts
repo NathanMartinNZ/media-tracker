@@ -20,18 +20,5 @@ export const episodesRouter = createTRPCRouter({
         season_id: input,
       },
     });
-  }),
-
-  setEpisodeWatchedById: publicProcedure
-    .input(z.object({ id: z.number(), watched: z.boolean() }))
-    .mutation(({ input, ctx }) => {
-      return ctx.prisma.episode.update({
-        where: {
-          id: input.id
-        },
-        data: {
-          watched: input.watched
-        }
-      })
-    })
+  })
 });
