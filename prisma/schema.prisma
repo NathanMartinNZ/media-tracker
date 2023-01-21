@@ -26,7 +26,7 @@ model Movie {
     popularity          Float
     backdrop_path       String?
     poster_path         String?
-    release_date        String
+    release_date        String?
     runtime             Int?
     spoken_languages    String[]
     status              String
@@ -66,7 +66,7 @@ model Season {
     media_type          String      @default("season")
     overview            String?
     poster_path         String?
-    air_date            String
+    air_date            String?
     title               String      @default("")
     season_number       Int
     watched_episodes    WatchedEpisode[]
@@ -80,7 +80,7 @@ model Episode {
     media_type          String      @default("episode")
     overview            String?
     still_path          String?
-    air_date            String
+    air_date            String?
     title               String      @default("")
     episode_number      Int
     watched             WatchedEpisode[]

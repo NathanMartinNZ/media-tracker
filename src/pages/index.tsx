@@ -38,14 +38,14 @@ const Home: NextPage = () => {
               Add
             </Link>
           </div>
-          <div className="grid grid-cols-2 gap-4 lg:gap-6 text-white md:grid-cols-3 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-4 lg:gap-6 md:grid-cols-3 lg:grid-cols-4">
             {movies &&
               shows &&
               movies.isSuccess &&
               shows.isSuccess &&
               [...movies.data, ...shows.data].map((media) => (
                 <div key={media.id} className="max-w-[200px]">
-                  <div className="card rounded-xl bg-base-100 shadow-xl">
+                  <div className="card rounded-xl bg-violet-300 shadow-xl dark:bg-gray-800 dark:hover:bg-gray-700">
                     {media.poster_path && (
                       <figure>
                         <Image
@@ -65,7 +65,7 @@ const Home: NextPage = () => {
                       <div className="card-actions justify-start">
                         <Link
                           href={getUrl(media)}
-                          className="btn-primary btn text-sm"
+                          className="btn-primary btn text-sm border-none"
                         >
                           View
                         </Link>

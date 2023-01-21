@@ -39,7 +39,6 @@ export const showsRouter = createTRPCRouter({
         data: showData.show
       })
       // Create all seasons
-      console.log(seasonsAndEpisodesData.seasons.length, seasonsAndEpisodesData.episodes.length)
       if(seasonsAndEpisodesData.seasons.length) {
         await ctx.prisma.season.createMany({
           data: seasonsAndEpisodesData.seasons,

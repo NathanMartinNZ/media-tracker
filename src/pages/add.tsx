@@ -101,7 +101,7 @@ const Add = () => {
               <h3 className="text-1xl text-center font-bold">Homepage</h3>
             </Link>
           </div>
-          <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
+          <h1 className="text-center text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
             <span className="text-[hsl(280,100%,70%)]">Add</span> Movie or Show
           </h1>
           <div>
@@ -129,54 +129,52 @@ const Add = () => {
               </button>
             </form>
           </div>
-          <div className="w-full lg:flex lg:max-w-3xl lg:flex-wrap lg:gap-8">
+          <div className="grid grid-cols-2 gap-4 lg:gap-6 md:grid-cols-3 lg:grid-cols-4">
             {searchResults &&
               searchResults.results &&
               searchResults.results.map((result: any) => (
-                <div
-                  key={result.id}
-                  className="relative mb-8 w-full gap-2 lg:flex lg:flex-row lg:gap-8"
-                >
-                  <div className="flex hidden w-[100px] shrink-0 lg:block">
+                <div key={result.id} className="max-w-[200px]">
+                  <div className="card rounded-xl bg-violet-300 shadow-xl dark:bg-gray-800 dark:hover:bg-gray-700">
                     {result.poster_path && (
-                      <Image
-                        src={`https://image.tmdb.org/t/p/w200${result.poster_path}`}
-                        alt={result.title || result.name}
-                        width="0"
-                        height="0"
-                        sizes="100vw"
-                        className="h-auto w-[100px] rounded-lg"
-                      />
+                      <figure>
+                        <Image
+                          src={`https://image.tmdb.org/t/p/w200${result.poster_path}`}
+                          alt={result.title || result.name}
+                          width="0"
+                          height="0"
+                          sizes="100vw"
+                          className="w-[200px] h-auto"
+                        />
+                      </figure>
                     )}
-                  </div>
-                  <div className="flex flex-col lg:gap-4">
-                    <h3 className="text-1xl font-medium text-white lg:mr-8 lg:text-2xl">
-                      {result.title || result.name}
-                    </h3>
-                    <div>
-                      Air date:{" "}
-                      {formatDate(result.release_date) ||
-                        formatDate(result.first_air_date)}
+                    <div className="card-body p-4">
+                      <h2 className="card-title text-base md:text-lg">
+                        {result.title || result.name}
+                      </h2>
+                      <div className="pb-2">
+                        Air date:{" "}
+                        {formatDate(result.release_date) ||
+                          formatDate(result.first_air_date)}
+                      </div>
+                      <div className="card-actions">
+                        {alreadyAdded(result.id) ? (
+                          <button
+                            disabled
+                            className="btn btn-primary border-none"
+                            onClick={() => handleAdd(result.id)}
+                          >
+                            Added
+                          </button>
+                        ) : (
+                          <button
+                            className="btn btn-primary border-none"
+                            onClick={() => handleAdd(result.id)}
+                          >
+                            Add
+                          </button>
+                        )}
+                      </div>
                     </div>
-                    <div className="hidden lg:block">{result.overview}</div>
-                  </div>
-                  <div className="flex-1 gap-4">
-                    {alreadyAdded(result.id) ? (
-                      <button
-                        disabled
-                        className="btn absolute top-0 right-0 bg-purple-600 text-white hover:bg-purple-700"
-                        onClick={() => handleAdd(result.id)}
-                      >
-                        Added
-                      </button>
-                    ) : (
-                      <button
-                        className="btn absolute top-0 right-0 bg-purple-600 text-white hover:bg-purple-700"
-                        onClick={() => handleAdd(result.id)}
-                      >
-                        Add
-                      </button>
-                    )}
                   </div>
                 </div>
               ))}

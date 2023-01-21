@@ -1,9 +1,7 @@
 import Head from "next/head";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/router";
 import { api } from "../../utils/api";
-import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import Loading from "../../components/Loading"
 
@@ -16,8 +14,6 @@ export async function getServerSideProps(ctx: any) {
 }
  
 export const MoviePage = ({ movieId }: { movieId: number }) => {
-  // const session = await getSession()
-  // console.log(session)
   const { data: session } = useSession()
   const movie = api.movies.getMovieById.useQuery(movieId);
   const movieWatchedMutation = api.watched.addMovieWatchedById.useMutation();
@@ -83,12 +79,14 @@ export const MoviePage = ({ movieId }: { movieId: number }) => {
                 />
               )}
             </div>
-            <div className="flex flex-col gap-4">
-              <h1 className="text-3xl font-medium text-white lg:text-5xl">
-                {movie.data.title}{" "}
-                <span className="font-light">
-                  ({displayYear(movie.data.release_date)})
-                </span>
+            <div className="flex flex-col gap-4 text-white">
+              <h1 className="text-3xl font-medium lg:text-5xl">
+                {movie.data.title}
+                {movie.data.release_date && (
+                  <span className="font-light">
+                    {" "}({displayYear(movie.data.release_date)})
+                  </span>
+                )}
               </h1>
               <div
                 className={`flex flex-row gap-2 ${
@@ -99,7 +97,7 @@ export const MoviePage = ({ movieId }: { movieId: number }) => {
                   movie.data.genres.map((genre) => (
                     <div
                       key={genre}
-                      className="rounded-full bg-violet-500 px-2 text-center text-sm text-white"
+                      className="flex items-center rounded-full bg-violet-500 px-2 py-1 text-center text-xs"
                     >
                       {genre}
                     </div>
@@ -110,7 +108,7 @@ export const MoviePage = ({ movieId }: { movieId: number }) => {
               <div className="grow-0">
                 {watchedMovie.isSuccess && watchedMovie.data.length ? (
                   <button
-                    className="btn bg-purple-800 hover:bg-purple-900"
+                    className="btn bg-teal-500 hover:bg-teal-600 dark:text-white"
                     onClick={() => handleWatched(true)}
                   >
                     Watched ✓

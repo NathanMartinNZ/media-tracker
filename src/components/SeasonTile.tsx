@@ -56,7 +56,7 @@ const SeasonTile = ({ season }: { season: Season }) => {
   return (
     <>
       <div 
-        className="flex w-full space-x-4 p-4 cursor-pointer border rounded-lg shadow-md hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
+        className="flex w-full space-x-4 p-4 cursor-pointer rounded-lg shadow-md bg-violet-300 hover:bg-violet-200 dark:bg-gray-800 dark:hover:bg-gray-700"
         onClick={handleShowEpisodes}
       >
         <div className="shrink-0 hidden lg:block lg:w-[100px]">
@@ -72,9 +72,9 @@ const SeasonTile = ({ season }: { season: Season }) => {
           )}
         </div>
         <div className="flex flex-col gap-2">
-          <h2 className="text-2xl font-medium text-white lg:text-3xl">{season.title}</h2>
+          <h2 className="text-2xl font-medium lg:text-3xl">{season.title}</h2>
           <div>
-            {displayYear(season.air_date)} | {episodes.data?.length} episodes
+            {season.air_date && displayYear(season.air_date)} | {episodes.data?.length} episodes
           </div>
           <div>{season.overview}</div>
         </div>

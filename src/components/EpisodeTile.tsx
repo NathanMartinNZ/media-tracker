@@ -19,7 +19,7 @@ const EpisodeTile = ({
   }
 
   return (
-    <div className="flex w-full lg:space-x-4 p-4">
+    <div className="flex w-full lg:space-x-4 p-4 text-white">
       <div className="shrink-0 hidden lg:block w-[100px]">
         {episode.still_path && (
           <Image
@@ -33,7 +33,7 @@ const EpisodeTile = ({
         )}
       </div>
       <div className="flex flex-col gap-2 grow">
-        <h3 className="text-1xl font-medium text-white lg:text-2xl">{episode.title}</h3>
+        <h3 className="text-1xl font-medium  lg:text-2xl">{episode.title}</h3>
         <div>{episodeNumberDisplay()} Air date: {formatDate(episode.air_date)}</div>
         <div className="hidden lg:block">{episode.overview}</div>
       </div>
@@ -41,7 +41,7 @@ const EpisodeTile = ({
         <div>
           {watchedEpisode ? (
             <button
-              className="btn bg-purple-800 hover:bg-purple-900"
+              className="btn bg-teal-500 hover:bg-teal-600 dark:text-white"
               onClick={() => handleEpisodeWatched(episode.id, true)}
             >
               Watched ✓

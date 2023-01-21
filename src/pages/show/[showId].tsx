@@ -69,8 +69,8 @@ export const ShowPage = ({ showId }:{ showId:number }) => {
                 />
               )}
             </div>
-            <div className="flex flex-col gap-4">
-              <h1 className="text-3xl font-medium text-white lg:text-5xl">
+            <div className="flex flex-col gap-4 text-white">
+              <h1 className="text-3xl font-mediu lg:text-5xl">
                 {show.data.title}
               </h1>
               <div className={`flex flex-row gap-2 ${!!show.data.genres.length ? "" : "hidden"}`}>
@@ -78,25 +78,27 @@ export const ShowPage = ({ showId }:{ showId:number }) => {
                   show.data.genres.map((genre) => (
                     <div
                       key={genre}
-                      className="rounded-full bg-violet-500 px-2 text-center text-sm text-white"
+                      className="flex items-center rounded-full bg-violet-500 px-2 py-1 text-center text-xs"
                     >
                       {genre}
                     </div>
                   ))}
               </div>
-              <div className="flex flex-col gap-1">
-                <span>
-                  First air date: {formatDate(show.data.first_air_date)}
-                </span>
-                <span>
-                  Last air date: {formatDate(show.data.last_air_date)}
-                </span>
-              </div>
+              {show.data.first_air_date && show.data.last_air_date && (
+                <div className="flex flex-col gap-1">
+                  <span>
+                    First air date: {formatDate(show.data.first_air_date)}
+                  </span>
+                  <span>
+                    Last air date: {formatDate(show.data.last_air_date)}
+                  </span>
+                </div>
+              )}
               <div>{show.data.overview}</div>
               <div className="grow-0">
                 {allEpisodesWatched() ? (
                   <button
-                    className="btn bg-purple-800 hover:bg-purple-900"
+                    className="btn bg-teal-500 hover:bg-teal-600 dark:text-white"
                   >
                     Watched ✓
                   </button>
