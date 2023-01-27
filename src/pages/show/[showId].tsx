@@ -60,7 +60,7 @@ export const ShowPage = ({ showId }:{ showId:number }) => {
       </Head>
       <main className="flex min-h-screen flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
         <div className="container flex flex-col items-center justify-center gap-8 px-4 py-8">
-          <div className="w-full gap-4 lg:max-w-3xl">
+          <div className="flex w-full gap-4 lg:max-w-3xl">
             <Link
               className="mx-auto flex w-32 flex-col gap-4 rounded-xl bg-white/10 p-3 text-white hover:bg-white/20 lg:mx-0"
               href="/"
