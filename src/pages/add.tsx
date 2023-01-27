@@ -2,20 +2,22 @@ import React, { useState, useEffect } from "react";
 import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
+import { useSession } from "next-auth/react";
 import { api } from "../utils/api";
 import AddingShow from "../components/AddingShow/AddingShow";
 import Link from "next/link";
 
 const Add = () => {
   const router = useRouter();
+  const { data: session } = useSession();
 
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedType, setSelectedType] = useState<string>("movie");
   const [searchResults, setSearchResults] = useState<any>();
   const [currentlyAdding, setCurrentlyAdding] = useState<boolean>(false);
 
-  const moviesAlreadyAdded = api.movies.getAll.useQuery();
-  const showsAlreadyAdded = api.shows.getAll.useQuery();
+  const moviesAlreadyAddedByUser = api.movies.getAllByUser.useQuery(session?.user?.id || "");
+  const showsAlreadyAddedByUser = api.shows.getAllByUser.useQuery(session?.user?.id || "");
 
   const addMovieById = api.movies.addMovieById.useMutation();
   const getResultMovies = api.movies.getMoviesBySearchTerm.useQuery(
@@ -60,26 +62,27 @@ const Add = () => {
   };
 
   const handleAdd = async (id: number) => {
+    if(!session) { return }
     // Add to DB then redirect to page
-    if (selectedType === "movie") {
-      const res = await addMovieById.mutateAsync(id);
-      router.push(`/movie/${res.id}`);
-    } else if (selectedType === "show") {
+    if(selectedType === "movie" && session.user) {
+      const res = await addMovieById.mutateAsync({movieId: id, userId: session.user.id});
+      router.push(`/movie/${res.movie_id}`);
+    } else if (selectedType === "show" && session.user) {
       // Display loading indicator due to having to load all seasons & episodes
       setCurrentlyAdding(true);
-      const res = await addShowById.mutateAsync(id);
-      router.push(`/show/${res.id}`);
+      const res = await addShowById.mutateAsync({showId: id, userId: session.user.id});
+      router.push(`/show/${res.show_id}`);
     }
   };
 
-  const alreadyAdded = (id: number) => {
-    if (!moviesAlreadyAdded.isSuccess || !showsAlreadyAdded.isSuccess) {
+  const alreadyAddedByUser = (id: number) => {
+    if (!moviesAlreadyAddedByUser.isSuccess || !showsAlreadyAddedByUser.isSuccess) {
       return false;
     }
 
-    // Check if movie or show already added to disable button
-    const movieMatch = moviesAlreadyAdded.data.find((movie) => movie.id === id);
-    const showMatch = showsAlreadyAdded.data.find((show) => show.id === id);
+    // Check if movie or show already added by user to disable button
+    const movieMatch = moviesAlreadyAddedByUser.data.find((movie) => movie.movie_id === id);
+    const showMatch = showsAlreadyAddedByUser.data.find((show) => show.show_id === id);
 
     return movieMatch || showMatch;
   };
@@ -157,7 +160,7 @@ const Add = () => {
                           formatDate(result.first_air_date)}
                       </div>
                       <div className="card-actions">
-                        {alreadyAdded(result.id) ? (
+                        {alreadyAddedByUser(result.id) ? (
                           <button
                             disabled
                             className="btn btn-primary border-none"

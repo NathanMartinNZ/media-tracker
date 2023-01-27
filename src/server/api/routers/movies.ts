@@ -1,11 +1,16 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure, protectedProcedure } from "../trpc";
 import axios from "axios"
-import { Movie } from "@prisma/client";
+import { AddedMovie, Movie } from "@prisma/client";
+import { randomUUID } from "crypto";
 
 export const moviesRouter = createTRPCRouter({
-  getAll: publicProcedure.query(({ ctx }) => {
-    return ctx.prisma.movie.findMany();
+  getAllByUser: publicProcedure.input(String).query(({ input, ctx }) => {
+    return ctx.prisma.addedMovie.findMany({
+      where: {
+        user_id: input
+      }
+    });
   }),
 
   getMovieById: publicProcedure.input(Number).query(({ input, ctx }) => {
@@ -26,43 +31,57 @@ export const moviesRouter = createTRPCRouter({
   }),
 
   addMovieById: publicProcedure
-    .input(Number)
+    .input(z.object({ movieId: z.number(), userId: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      // Fetch movie from TMDB
-      const fetchMovie:any = async () => {
-        const res = await axios.get(`https://api.themoviedb.org/3/movie/${input}?api_key=${process.env.TMDB_CLIENT_API}&language=en-US`)
-        // console.log(res.data)
-        return res.data
+      const movieAlreadyAdded = await ctx.prisma.movie.findUnique({
+        where: {
+          id: input.movieId
+        }
+      })
+      if(!movieAlreadyAdded) {
+        // Fetch movie from TMDB
+        const fetchMovie:any = async () => {
+          const res = await axios.get(`https://api.themoviedb.org/3/movie/${input.movieId}?api_key=${process.env.TMDB_CLIENT_API}&language=en-US`)
+          return res.data
+        }
+        const movieRaw = await fetchMovie()
+
+        // Parse movie obj to pull only relevant data
+        const movieClean:Movie = {
+          id: movieRaw.id,
+          media_type: "movie",
+          imdb_id: movieRaw.imdb_id,
+          genres: movieRaw.genres.map((genre:any) => genre.name),
+          original_language: movieRaw.original_language,
+          original_title: movieRaw.original_title,
+          overview: movieRaw.overview,
+          popularity: movieRaw.popularity,
+          backdrop_path: movieRaw.backdrop_path,
+          poster_path: movieRaw.poster_path,
+          release_date: movieRaw.release_date,
+          runtime: movieRaw.runtime,
+          spoken_languages: movieRaw.spoken_languages.map((lang:any) => lang.iso_639_1),
+          status: movieRaw.status,
+          tagline: movieRaw.tagline,
+          title: movieRaw.title
+        }
+  
+        // Add movie to DB
+        await ctx.prisma.movie.create({
+          data: movieClean
+        })
       }
-      const movieRaw = await fetchMovie()
 
-      console.log(movieRaw)
-
-      // Parse movie obj to pull only relevant data
-      const movieClean:Movie = {
-        id: movieRaw.id,
-        media_type: "movie",
-        imdb_id: movieRaw.imdb_id,
-        genres: movieRaw.genres.map((genre:any) => genre.name),
-        original_language: movieRaw.original_language,
-        original_title: movieRaw.original_title,
-        overview: movieRaw.overview,
-        popularity: movieRaw.popularity,
-        backdrop_path: movieRaw.backdrop_path,
-        poster_path: movieRaw.poster_path,
-        release_date: movieRaw.release_date,
-        runtime: movieRaw.runtime,
-        spoken_languages: movieRaw.spoken_languages.map((lang:any) => lang.iso_639_1),
-        status: movieRaw.status,
-        tagline: movieRaw.tagline,
-        title: movieRaw.title
-      }
-
-      // Add movie to DB
-      const createMovie = await ctx.prisma.movie.create({
-        data: movieClean
+      // Add movie to User AddedMovie model in DB
+      const userAddedMovie = await ctx.prisma.addedMovie.create({
+        data: {
+          id: randomUUID(),
+          movie_id: input.movieId,
+          user_id: input.userId,
+          timestamp: new Date()
+        } as AddedMovie
       })
 
-      return createMovie
+      return userAddedMovie
     }),
 });

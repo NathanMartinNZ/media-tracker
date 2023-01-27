@@ -32,6 +32,7 @@ model Movie {
     status              String
     tagline             String?
     title               String
+    added               AddedMovie[]
     watched             WatchedMovie[]
 }
 
@@ -55,6 +56,7 @@ model Show {
     networks            String[]
     number_of_episodes  Int
     number_of_seasons   Int
+    added               AddedShow[]
 }
 
 // TV SHOW SEASON SCHEMA
@@ -84,6 +86,26 @@ model Episode {
     title               String      @default("")
     episode_number      Int
     watched             WatchedEpisode[]
+}
+
+// USER ADDED MOVIE SCHEMA
+model AddedMovie {
+    id              String  @id
+    user            User    @relation(fields: [user_id], references: [id])
+    user_id         String     
+    movie           Movie   @relation(fields: [movie_id], references: [id])
+    movie_id        Int
+    timestamp       DateTime  @default(now())
+}
+
+// USER ADDED SHOW SCHEMA
+model AddedShow {
+    id              String  @id
+    user            User    @relation(fields: [user_id], references: [id])
+    user_id         String     
+    show            Show   @relation(fields: [show_id], references: [id])
+    show_id         Int
+    timestamp       DateTime  @default(now())
 }
 
 // WATCHED MOVIE SCHEMA
@@ -136,13 +158,15 @@ model Session {
 }
 
 model User {
-    id            String    @id @default(cuid())
-    name          String?
-    email         String?   @unique
-    emailVerified DateTime?
-    image         String?
-    accounts      Account[]
-    sessions      Session[]
+    id                    String    @id @default(cuid())
+    name                  String?
+    email                 String?   @unique
+    emailVerified         DateTime?
+    image                 String?
+    accounts              Account[]
+    sessions              Session[]
+    added_movies          AddedMovie[]
+    added_shows           AddedShow[]
     watched_movies        WatchedMovie[]
     watched_episodes      WatchedEpisode[]
 }
