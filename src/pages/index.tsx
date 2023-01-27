@@ -2,13 +2,14 @@ import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import Image from "next/image";
-
+import { useSession } from "next-auth/react";
 import { api } from "../utils/api";
 import { Movie, Show } from "@prisma/client";
 
 const Home: NextPage = () => {
-  const movies = api.movies.getAll.useQuery();
-  const shows = api.shows.getAll.useQuery();
+  const { data: session } = useSession();
+  const movies = api.movies.getAllByUser.useQuery(session?.user?.id || "");
+  const shows = api.shows.getAllByUser.useQuery(session?.user?.id || "");
 
   const getUrl = (media: Movie | Show) => {
     if (media.media_type == "movie") {

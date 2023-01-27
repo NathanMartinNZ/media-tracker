@@ -7,9 +7,15 @@ import { randomUUID } from "crypto";
 
 export const showsRouter = createTRPCRouter({
   getAllByUser: publicProcedure.input(String).query(({ input, ctx }) => {
-    return ctx.prisma.addedShow.findMany({
+    return ctx.prisma.show.findMany({
       where: {
-        user_id: input
+        added: {
+          some: {
+            user_id: {
+              equals: input
+            }
+          }
+        }
       }
     });
   }),

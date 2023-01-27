@@ -6,9 +6,15 @@ import { randomUUID } from "crypto";
 
 export const moviesRouter = createTRPCRouter({
   getAllByUser: publicProcedure.input(String).query(({ input, ctx }) => {
-    return ctx.prisma.addedMovie.findMany({
+    return ctx.prisma.movie.findMany({
       where: {
-        user_id: input
+        added: {
+          some: {
+            user_id: {
+              equals: input
+            }
+          }
+        }
       }
     });
   }),

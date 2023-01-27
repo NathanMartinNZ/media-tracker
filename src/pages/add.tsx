@@ -81,8 +81,8 @@ const Add = () => {
     }
 
     // Check if movie or show already added by user to disable button
-    const movieMatch = moviesAlreadyAddedByUser.data.find((movie) => movie.movie_id === id);
-    const showMatch = showsAlreadyAddedByUser.data.find((show) => show.show_id === id);
+    const movieMatch = moviesAlreadyAddedByUser.data.find((movie) => movie.id === id);
+    const showMatch = showsAlreadyAddedByUser.data.find((show) => show.id === id);
 
     return movieMatch || showMatch;
   };
