@@ -83,4 +83,13 @@ export const showsRouter = createTRPCRouter({
 
       return userAddedShow
     }),
+
+  removeShowForUser: publicProcedure.input(z.object({ showId: z.number(), userId: z.string() })).mutation(({ input, ctx }) => {
+    return ctx.prisma.addedShow.deleteMany({
+      where: {
+        show_id: input.showId,
+        user_id: input.userId
+      }
+    });
+  }),
 });

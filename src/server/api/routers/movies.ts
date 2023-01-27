@@ -90,4 +90,13 @@ export const moviesRouter = createTRPCRouter({
 
       return userAddedMovie
     }),
+
+  removeMovieForUser: publicProcedure.input(z.object({ movieId: z.number(), userId: z.string() })).mutation(({ input, ctx }) => {
+    return ctx.prisma.addedMovie.deleteMany({
+      where: {
+        movie_id: input.movieId,
+        user_id: input.userId
+      }
+    });
+  }),
 });
