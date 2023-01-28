@@ -5,11 +5,21 @@ import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { api } from "../utils/api";
 import { Movie, Show } from "@prisma/client";
+import Filters from "../components/Filters"
+import { filterMedia } from "../helpers/index"
+import { useMemo, useState } from "react";
+
 
 const Home: NextPage = () => {
   const { data: session } = useSession();
   const movies = api.movies.getAllByUser.useQuery(session?.user?.id || "");
   const shows = api.shows.getAllByUser.useQuery(session?.user?.id || "");
+  const [ filters, setFilters ] = useState({
+    typeOfMedia: "both",
+    watched: "both"
+  });
+  const filteredMedia = useMemo(() => filterMedia({movies, shows}, filters), [movies, shows, filters])
+  console.log(filteredMedia)
 
   const getUrl = (media: Movie | Show) => {
     if (media.media_type == "movie") {
@@ -31,9 +41,10 @@ const Home: NextPage = () => {
           <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
             <span className="text-[hsl(280,100%,70%)]">Media</span> Tracker
           </h1>
-          <div>
+          <div className="flex p-4 gap-4">
+            <Filters filters={filters} setFilters={setFilters} />
             <Link
-              className="rounded-xl bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20"
+              className="rounded-xl bg-white/10 px-8 py-3 font-semibold text-white no-underline transition hover:bg-white/20"
               href="/add"
             >
               Add
@@ -44,7 +55,8 @@ const Home: NextPage = () => {
               shows &&
               movies.isSuccess &&
               shows.isSuccess &&
-              [...movies.data, ...shows.data].map((media) => (
+              filteredMedia &&
+              filteredMedia.map((media:Movie|Show) => (
                 <div key={media.id} className="max-w-[200px]">
                   <div className="card rounded-xl bg-violet-300 shadow-xl dark:bg-gray-800 dark:hover:bg-gray-700">
                     {media.poster_path && (
