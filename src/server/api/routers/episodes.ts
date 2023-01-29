@@ -5,7 +5,7 @@ export const episodesRouter = createTRPCRouter({
   getAll: publicProcedure.query(({ ctx }) => {
     return ctx.prisma.episode.findMany();
   }),
-
+  
   getEpisodeById: publicProcedure.input(Number).query(({ input, ctx }) => {
     return ctx.prisma.episode.findUnique({
       where: {

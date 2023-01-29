@@ -3,7 +3,7 @@ import { Episode } from "@prisma/client";
 import { api } from "../utils/api";
 import Image from "next/image";
 import EpisodeTile from "./EpisodeTile";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import Loading from "../components/Loading"
 
@@ -16,6 +16,10 @@ const SeasonTile = ({ season }: { season: Season }) => {
 
   const [ showEpisodes, setShowEpisodes ] = useState<boolean>(false)
 
+  useEffect(() => {
+    console.log("watchedEpisodes refetch called")
+  }, [season, watchedEpisodes])
+
   if (!session) { return <Loading />; }
 
   const displayYear = (date: string) => {
@@ -25,6 +29,12 @@ const SeasonTile = ({ season }: { season: Season }) => {
 
   const sortedEpisodes = (unsortedEpisodes:Episode[]) => {
     return unsortedEpisodes.sort((a, b) => (a.episode_number > b.episode_number) ? 1 : -1)
+  }
+
+  const hasWatchedEpisode = (episodeId:number) => {
+    if(!watchedEpisodes.data) { return false }
+
+    return !!watchedEpisodes.data.filter((watchedEp:WatchedEpisode) => watchedEp.episode_id === episodeId).length
   }
 
   const handleEpisodeWatched = async (episodeId: number, watched: boolean) => {
@@ -85,7 +95,7 @@ const SeasonTile = ({ season }: { season: Season }) => {
             <EpisodeTile
               key={episode.id}
               episode={episode}
-              watchedEpisode={!!watchedEpisodes.data?.filter((watchedEp:WatchedEpisode) => watchedEp.episode_id === episode.id).length}
+              watchedEpisode={hasWatchedEpisode(episode.id)}
               handleEpisodeWatched={handleEpisodeWatched}
             />
           ))}
