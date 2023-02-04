@@ -5,7 +5,7 @@ import { formatDate } from "../helpers/index"
 const EpisodeTile = ({
   episode,
   watchedEpisode,
-  handleEpisodeWatched,
+  handleEpisodeWatched
 }: {
   episode: Episode;
   watchedEpisode: boolean;

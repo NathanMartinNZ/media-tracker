@@ -62,6 +62,7 @@ const fetchSeasonsAndEpisodesData = async ( season_numbers:number[], showId:numb
       const episode:Episode = {
         id: episodeRaw.id,
         season_id: seasonRaw.id,
+        show_id: showId,
         media_type: "episode",
         overview: episodeRaw.overview,
         still_path: episodeRaw.still_path,

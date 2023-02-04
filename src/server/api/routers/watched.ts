@@ -17,37 +17,39 @@ export const watchedRouter = createTRPCRouter({
   hasWatchedAllEpisodes: publicProcedure
     .input(
       z.object({
-        seasonIds: z.number().array(),
         showId: z.number(),
         userId: z.string(),
       })
     )
     .query(async ({ input, ctx }) => {
-      const show = await ctx.prisma.show.findUnique({
+      const episodes = await ctx.prisma.episode.findMany({
         where: {
-          id: input.showId
+          show_id: input.showId
         }
       });
       const watchedEpisodes = await ctx.prisma.watchedEpisode.findMany({
         where: {
           AND: [
-            { season_id: { in: input.seasonIds } },
+            { show_id: input.showId },
             { user_id: input.userId },
           ],
         },
       });
       const uniqueWatchedEpisodes = [...new Set(watchedEpisodes.map((e:WatchedEpisode) => e.episode_id))];
-      if(!show) { return false }
+      // if(!show) { return false }
+
+      console.log(uniqueWatchedEpisodes.length)
+      console.log(episodes.length)
       
-      return uniqueWatchedEpisodes.length >= show.number_of_episodes;
+      return uniqueWatchedEpisodes.length >= episodes.length;
     }),
 
-  getWatchedEpisodesBySeasonId: publicProcedure
-    .input(z.object({ seasonId: z.number(), userId: z.string() }))
+  getWatchedEpisodesByShowId: publicProcedure
+    .input(z.object({ showId: z.number(), userId: z.string() }))
     .query(({ input, ctx }) => {
       return ctx.prisma.watchedEpisode.findMany({
         where: {
-          AND: [{ season_id: input.seasonId }, { user_id: input.userId }],
+          AND: [{ show_id: input.showId }, { user_id: input.userId }],
         },
       });
     }),
@@ -72,6 +74,7 @@ export const watchedRouter = createTRPCRouter({
       z.object({
         episodeId: z.number(),
         seasonId: z.number(),
+        showId: z.number(),
         userId: z.string(),
       })
     )
@@ -81,6 +84,7 @@ export const watchedRouter = createTRPCRouter({
         episode_id: input.episodeId,
         user_id: input.userId,
         season_id: input.seasonId,
+        show_id: input.showId,
         timestamp: new Date(),
       };
 
@@ -90,11 +94,11 @@ export const watchedRouter = createTRPCRouter({
     }),
 
   addAllEpisodesWatched: publicProcedure
-    .input(z.object({ seasonIds: z.number().array(), userId: z.string() }))
+    .input(z.object({ showId: z.number(), userId: z.string() }))
     .mutation(async ({ input, ctx }) => {
       const episodes = await ctx.prisma.episode.findMany({
         where: {
-          season_id: { in: input.seasonIds },
+          show_id: input.showId,
         },
       });
 
@@ -104,6 +108,7 @@ export const watchedRouter = createTRPCRouter({
           episode_id: episode.id,
           user_id: input.userId,
           season_id: episode.season_id,
+          show_id: input.showId,
           timestamp: new Date(),
         } as WatchedEpisode;
       });

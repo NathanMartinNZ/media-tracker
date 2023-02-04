@@ -40,6 +40,7 @@ model Movie {
 model Show {
     id                  Int         @id
     seasons             Season[]
+    episodes            Episode[]
     media_type          String      @default("show")
     genres              String[]
     original_language   String
@@ -57,6 +58,7 @@ model Show {
     number_of_episodes  Int
     number_of_seasons   Int
     added               AddedShow[]
+    watched_episodes    WatchedEpisode[]
 }
 
 // TV SHOW SEASON SCHEMA
@@ -79,6 +81,8 @@ model Episode {
     id                  Int         @id
     season              Season      @relation(fields: [season_id], references: [id])
     season_id           Int
+    show                Show?       @relation(fields: [show_id], references: [id])
+    show_id             Int?   
     media_type          String      @default("episode")
     overview            String?
     still_path          String?
@@ -127,6 +131,8 @@ model WatchedEpisode {
     episode_id      Int
     season          Season  @relation(fields: [season_id], references: [id])
     season_id       Int
+    show            Show?  @relation(fields: [show_id], references: [id])
+    show_id         Int?   
     timestamp       DateTime  @default(now())
 }
 

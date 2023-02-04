@@ -14,10 +14,10 @@ export const episodesRouter = createTRPCRouter({
     });
   }),
 
-  getEpisodesBySeasonId: publicProcedure.input(Number).query(({ input, ctx }) => {
+  getEpisodesByShowId: publicProcedure.input(Number).query(({ input, ctx }) => {
     return ctx.prisma.episode.findMany({
       where: {
-        season_id: input,
+        show_id: input,
       },
     });
   })

@@ -7,7 +7,6 @@ import { useSession } from "next-auth/react";
 import { Episode, Season, WatchedEpisode } from "@prisma/client";
 import SeasonTile from "../../components/SeasonTile";
 import { formatDate } from "../../../src/helpers/index";
-import { useMemo } from "react";
 
 const Loading = () => {
   return (
@@ -29,31 +28,45 @@ export const ShowPage = ({ showId }: { showId: number }) => {
 
   const show = api.shows.getShowById.useQuery(showId);
   const seasons = api.seasons.getSeasonsByShowId.useQuery(showId);
+  const episodes = api.episodes.getEpisodesByShowId.useQuery(showId);
+  const watchedEpisodes = api.watched.getWatchedEpisodesByShowId.useQuery({
+    showId: Math.floor(showId),
+    userId: session?.user?.id || "",
+  });
   const removeShowForUser = api.shows.removeShowForUser.useMutation();
   const hasWatchedAllEpisodes = api.watched.hasWatchedAllEpisodes.useQuery({
-    seasonIds: seasons.data?.map((s: Season) => s.id) ?? [],
     showId: Math.floor(showId),
     userId: session?.user?.id ?? "",
   });
   const addAllEpisodesWatched = api.watched.addAllEpisodesWatched.useMutation();
-  const removeAllEpisodesWatched = api.watched.removeAllEpisodesWatched.useMutation();
+  const removeAllEpisodesWatched =
+    api.watched.removeAllEpisodesWatched.useMutation();
 
   if (!show.data || !session) {
     return <Loading />;
   }
 
-  console.log(hasWatchedAllEpisodes.data)
+  console.log(hasWatchedAllEpisodes.data);
+
+  console.log(episodes.data)
 
   const sortedSeasons = (unsortedSeasons: Season[]) => {
-    console.log("sortedSeasons called")
+    console.log("sortedSeasons called");
     return unsortedSeasons.sort((a, b) =>
       a.season_number > b.season_number ? 1 : -1
     );
   };
 
   const allEpisodesWatched = () => {
+    console.log('all episodes watched fired')
+    console.log(`all episodes watched: ${hasWatchedAllEpisodes.data}`)
     return hasWatchedAllEpisodes.data ? hasWatchedAllEpisodes.data : false;
   };
+
+  const refetchWatchedEpisodes = () => {
+    watchedEpisodes.refetch()
+    hasWatchedAllEpisodes.refetch()
+  }
 
   const handleRemoveShowForUser = async () => {
     if (!show.data || !session.user) {
@@ -71,11 +84,11 @@ export const ShowPage = ({ showId }: { showId: number }) => {
       return;
     }
     await addAllEpisodesWatched.mutateAsync({
-      seasonIds: seasons.data.map((s: Season) => s.id),
+      showId: Math.floor(showId),
       userId: session.user.id,
     });
     hasWatchedAllEpisodes.refetch();
-    seasons.refetch();
+    refetchWatchedEpisodes();
   };
 
   const handleRemoveAllEpisodesWatched = async () => {
@@ -87,7 +100,7 @@ export const ShowPage = ({ showId }: { showId: number }) => {
       userId: session.user.id,
     });
     hasWatchedAllEpisodes.refetch();
-    seasons.refetch();
+    refetchWatchedEpisodes();
   };
 
   return (
@@ -185,8 +198,20 @@ export const ShowPage = ({ showId }: { showId: number }) => {
           </div>
           <div className="flex w-full flex-col gap-2 lg:flex lg:max-w-3xl lg:flex-row lg:flex-wrap lg:gap-4">
             {seasons.data &&
+              episodes.data &&
+              watchedEpisodes.data &&
               sortedSeasons(seasons.data).map((season) => (
-                <SeasonTile key={season.id} season={season} />
+                <SeasonTile
+                  key={season.id}
+                  season={season}
+                  episodes={episodes.data.filter(
+                    (ep: Episode) => ep.season_id === season.id
+                  )}
+                  watchedEpisodes={watchedEpisodes.data.filter(
+                    (wep: WatchedEpisode) => wep.season_id === season.id
+                  )}
+                  refetchWatchedEpisodes={refetchWatchedEpisodes}
+                />
               ))}
           </div>
         </div>
