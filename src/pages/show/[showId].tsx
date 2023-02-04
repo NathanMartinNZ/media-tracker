@@ -46,20 +46,13 @@ export const ShowPage = ({ showId }: { showId: number }) => {
     return <Loading />;
   }
 
-  console.log(hasWatchedAllEpisodes.data);
-
-  console.log(episodes.data)
-
   const sortedSeasons = (unsortedSeasons: Season[]) => {
-    console.log("sortedSeasons called");
     return unsortedSeasons.sort((a, b) =>
       a.season_number > b.season_number ? 1 : -1
     );
   };
 
   const allEpisodesWatched = () => {
-    console.log('all episodes watched fired')
-    console.log(`all episodes watched: ${hasWatchedAllEpisodes.data}`)
     return hasWatchedAllEpisodes.data ? hasWatchedAllEpisodes.data : false;
   };
 

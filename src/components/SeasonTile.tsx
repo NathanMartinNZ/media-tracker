@@ -25,13 +25,6 @@ const SeasonTile = ({
     api.watched.removeEpisodeWatchedById.useMutation();
   const [showEpisodes, setShowEpisodes] = useState<boolean>(false);
 
-  // useEffect(() => {
-  //   console.log("watchedEpisodes refetch called")
-  //   console.log(watchedEpisodes.data?.length)
-  // }, [watchedEpisodes])
-
-  console.log("something changed");
-
   if (!session) {
     return <Loading />;
   }

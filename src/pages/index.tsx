@@ -19,7 +19,6 @@ const Home: NextPage = () => {
     watched: "both"
   });
   const filteredMedia = useMemo(() => filterMedia({movies, shows}, filters), [movies, shows, filters])
-  console.log(filteredMedia)
 
   const getUrl = (media: Movie | Show) => {
     if (media.media_type == "movie") {

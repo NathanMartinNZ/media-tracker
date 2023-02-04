@@ -36,11 +36,7 @@ export const watchedRouter = createTRPCRouter({
         },
       });
       const uniqueWatchedEpisodes = [...new Set(watchedEpisodes.map((e:WatchedEpisode) => e.episode_id))];
-      // if(!show) { return false }
 
-      console.log(uniqueWatchedEpisodes.length)
-      console.log(episodes.length)
-      
       return uniqueWatchedEpisodes.length >= episodes.length;
     }),
 
