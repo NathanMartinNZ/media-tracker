@@ -137,7 +137,7 @@ const Add = () => {
               searchResults.results &&
               searchResults.results.map((result: any) => (
                 <div key={result.id} className="max-w-[200px]">
-                  <div className="card rounded-xl bg-violet-300 shadow-xl dark:bg-gray-800 dark:hover:bg-gray-700">
+                  <div className="card rounded-xl bg-gray-300 hover:bg-gray-200 shadow-xl dark:bg-gray-800 dark:hover:bg-gray-700">
                     {result.poster_path && (
                       <figure>
                         <Image
