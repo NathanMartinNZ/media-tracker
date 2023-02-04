@@ -41,7 +41,7 @@ const Home: NextPage = () => {
             <span className="text-[hsl(280,100%,70%)]">Media</span> Tracker
           </h1>
           <div className="flex p-4 gap-4">
-            <Filters filters={filters} setFilters={setFilters} />
+            {filteredMedia && filteredMedia.length > 0 && <Filters filters={filters} setFilters={setFilters} />}
             <Link
               className="rounded-xl bg-white/10 px-8 py-3 font-semibold text-white no-underline transition hover:bg-white/20"
               href="/add"
@@ -57,7 +57,7 @@ const Home: NextPage = () => {
               filteredMedia &&
               filteredMedia.map((media:Movie|Show) => (
                 <div key={media.id} className="max-w-[200px]">
-                  <div className="card rounded-xl bg-violet-300 shadow-xl dark:bg-gray-800 dark:hover:bg-gray-700">
+                  <div className="card rounded-xl bg-gray-300 hover:bg-gray-200 shadow-xl dark:bg-gray-800 dark:hover:bg-gray-700">
                     {media.poster_path && (
                       <figure>
                         <Image
@@ -77,7 +77,7 @@ const Home: NextPage = () => {
                       <div className="card-actions justify-start">
                         <Link
                           href={getUrl(media)}
-                          className="btn-primary btn text-sm border-none"
+                          className="btn btn-primary text-sm border-none"
                         >
                           View
                         </Link>

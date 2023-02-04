@@ -114,20 +114,20 @@ const Add = () => {
             >
               <input
                 type="search"
-                className="rounded px-3 py-3"
+                className="w-full md:w-auto rounded-lg px-3 py-3"
                 name="addSearch"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
               <select
-                className="rounded px-3"
+                className="grow rounded-lg px-3 text-center"
                 value={selectedType}
                 onChange={(e) => setSelectedType(e.target.value)}
               >
                 <option value="movie">Movie</option>
                 <option value="show">Show</option>
               </select>
-              <button type="submit" className="btn py-4">
+              <button type="submit" className="btn py-4 grow">
                 Search
               </button>
             </form>

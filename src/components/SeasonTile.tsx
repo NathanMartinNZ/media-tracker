@@ -76,7 +76,7 @@ const SeasonTile = ({
   return (
     <>
       <div
-        className="flex w-full cursor-pointer space-x-4 rounded-lg bg-violet-300 p-4 shadow-md hover:bg-violet-200 dark:bg-gray-800 dark:hover:bg-gray-700"
+        className="flex w-full cursor-pointer space-x-4 rounded-lg bg-gray-300 p-4 hover:bg-gray-200 shadow-md dark:bg-gray-800 dark:hover:bg-gray-700"
         onClick={handleShowEpisodes}
       >
         <div className="hidden shrink-0 lg:block lg:w-[100px]">
