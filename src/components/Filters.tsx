@@ -36,7 +36,10 @@ const Filters = ({
   };
 
   return (
-    <div className="relative flex items-center justify-center">
+    <div
+      ref={dropdownRef}
+      className="relative flex items-center justify-center"
+    >
       <button
         onClick={handleShowDropdown}
         data-dropdown-toggle="dropdown"
@@ -61,10 +64,7 @@ const Filters = ({
         </svg>
       </button>
       {showDropdown && (
-        <div
-          ref={dropdownRef}
-          className="absolute left-auto top-14 z-10 w-56 translate-x-1/4 rounded-lg bg-white p-3 shadow dark:bg-gray-700 md:left-0 md:translate-x-0"
-        >
+        <div className="absolute left-auto top-14 z-10 w-56 translate-x-1/4 rounded-lg bg-white p-3 shadow dark:bg-gray-700 md:left-0 md:translate-x-0">
           <h6 className="mb-3 text-sm font-medium text-gray-900 dark:text-white">
             Type of media
           </h6>

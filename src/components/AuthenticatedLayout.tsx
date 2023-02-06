@@ -9,8 +9,6 @@ const AuthenticatedLayout = ({ children }:React.PropsWithChildren) => {
   if(!status || status === "loading") { return <Loading /> }
   if(status === "unauthenticated") { return <SignIn /> }
 
-  console.log(session)
-
   return (
     <div className="flex relative min-h-screen flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
       <div className="absolute right-0">
