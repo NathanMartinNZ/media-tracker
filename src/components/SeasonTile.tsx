@@ -66,7 +66,7 @@ const SeasonTile = ({
       });
     }
     // Refetch episodes to get updated watched state
-    refetchWatchedEpisodes()
+    refetchWatchedEpisodes();
   };
 
   const handleShowEpisodes = () => {
@@ -76,7 +76,7 @@ const SeasonTile = ({
   return (
     <>
       <div
-        className="flex w-full cursor-pointer space-x-4 rounded-lg bg-gray-300 p-4 hover:bg-gray-200 shadow-md dark:bg-gray-800 dark:hover:bg-gray-700"
+        className="flex w-full cursor-pointer space-x-4 rounded-lg bg-gray-300 p-4 shadow-md hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700"
         onClick={handleShowEpisodes}
       >
         <div className="hidden shrink-0 lg:block lg:w-[100px]">
@@ -84,9 +84,11 @@ const SeasonTile = ({
             <Image
               src={`https://image.tmdb.org/t/p/w200${season.poster_path}`}
               alt={season.title}
-              width="0"
-              height="0"
+              width="100"
+              height="150"
               sizes="100vw"
+              placeholder="blur"
+              blurDataURL="/plh-153-230.png"
               className="h-auto w-[100px] rounded-lg"
             />
           )}

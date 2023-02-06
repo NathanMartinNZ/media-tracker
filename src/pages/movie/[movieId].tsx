@@ -92,10 +92,12 @@ export const MoviePage = ({ movieId }: { movieId: number }) => {
                 <Image
                   src={`https://image.tmdb.org/t/p/w200${movie.data.poster_path}`}
                   alt={movie.data.title}
-                  width="0"
-                  height="0"
+                  width="200"
+                  height="300"
                   sizes="100vw"
-                  className="mb-4 h-auto w-[200px] rounded lg:mb-0"
+                  placeholder="blur"
+                  blurDataURL="/plh-153-230.png"
+                  className="mb-4 h-auto w-[200px] rounded-lg lg:mb-0"
                   priority
                 />
               )}

@@ -16,8 +16,12 @@ const Add = () => {
   const [searchResults, setSearchResults] = useState<any>();
   const [currentlyAdding, setCurrentlyAdding] = useState<boolean>(false);
 
-  const moviesAlreadyAddedByUser = api.movies.getAllByUser.useQuery(session?.user?.id || "");
-  const showsAlreadyAddedByUser = api.shows.getAllByUser.useQuery(session?.user?.id || "");
+  const moviesAlreadyAddedByUser = api.movies.getAllByUser.useQuery(
+    session?.user?.id || ""
+  );
+  const showsAlreadyAddedByUser = api.shows.getAllByUser.useQuery(
+    session?.user?.id || ""
+  );
 
   const addMovieById = api.movies.addMovieById.useMutation();
   const getResultMovies = api.movies.getMoviesBySearchTerm.useQuery(
@@ -62,27 +66,42 @@ const Add = () => {
   };
 
   const handleAdd = async (id: number) => {
-    if(!session) { return }
+    if (!session) {
+      return;
+    }
     // Add to DB then redirect to page
-    if(selectedType === "movie" && session.user) {
-      const res = await addMovieById.mutateAsync({movieId: id, userId: session.user.id});
+    if (selectedType === "movie" && session.user) {
+      const res = await addMovieById.mutateAsync({
+        movieId: id,
+        userId: session.user.id,
+      });
       router.push(`/movie/${res.movie_id}`);
     } else if (selectedType === "show" && session.user) {
       // Display loading indicator due to having to load all seasons & episodes
       setCurrentlyAdding(true);
-      const res = await addShowById.mutateAsync({showId: id, userId: session.user.id});
+      const res = await addShowById.mutateAsync({
+        showId: id,
+        userId: session.user.id,
+      });
       router.push(`/show/${res.show_id}`);
     }
   };
 
   const alreadyAddedByUser = (id: number) => {
-    if (!moviesAlreadyAddedByUser.isSuccess || !showsAlreadyAddedByUser.isSuccess) {
+    if (
+      !moviesAlreadyAddedByUser.isSuccess ||
+      !showsAlreadyAddedByUser.isSuccess
+    ) {
       return false;
     }
 
     // Check if movie or show already added by user to disable button
-    const movieMatch = moviesAlreadyAddedByUser.data.find((movie) => movie.id === id);
-    const showMatch = showsAlreadyAddedByUser.data.find((show) => show.id === id);
+    const movieMatch = moviesAlreadyAddedByUser.data.find(
+      (movie) => movie.id === id
+    );
+    const showMatch = showsAlreadyAddedByUser.data.find(
+      (show) => show.id === id
+    );
 
     return movieMatch || showMatch;
   };
@@ -114,7 +133,7 @@ const Add = () => {
             >
               <input
                 type="search"
-                className="w-full md:w-auto rounded-lg px-3 py-3"
+                className="w-full rounded-lg px-3 py-3 md:w-auto"
                 name="addSearch"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -127,26 +146,28 @@ const Add = () => {
                 <option value="movie">Movie</option>
                 <option value="show">Show</option>
               </select>
-              <button type="submit" className="btn py-4 grow">
+              <button type="submit" className="btn grow py-4">
                 Search
               </button>
             </form>
           </div>
-          <div className="grid grid-cols-2 gap-4 lg:gap-6 md:grid-cols-3 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 lg:gap-6">
             {searchResults &&
               searchResults.results &&
               searchResults.results.map((result: any) => (
                 <div key={result.id} className="max-w-[200px]">
-                  <div className="card rounded-xl bg-gray-300 hover:bg-gray-200 shadow-xl dark:bg-gray-800 dark:hover:bg-gray-700">
+                  <div className="card rounded-xl bg-gray-300 shadow-xl hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700">
                     {result.poster_path && (
                       <figure>
                         <Image
                           src={`https://image.tmdb.org/t/p/w200${result.poster_path}`}
                           alt={result.title || result.name}
-                          width="0"
-                          height="0"
+                          width="200"
+                          height="300"
                           sizes="100vw"
-                          className="w-[200px] h-auto"
+                          placeholder="blur"
+                          blurDataURL="/plh-153-230.png"
+                          className="h-auto w-[200px]"
                         />
                       </figure>
                     )}
@@ -163,14 +184,14 @@ const Add = () => {
                         {alreadyAddedByUser(result.id) ? (
                           <button
                             disabled
-                            className="btn btn-primary border-none"
+                            className="btn-primary btn border-none"
                             onClick={() => handleAdd(result.id)}
                           >
                             Added
                           </button>
                         ) : (
                           <button
-                            className="btn btn-primary border-none"
+                            className="btn-primary btn border-none"
                             onClick={() => handleAdd(result.id)}
                           >
                             Add

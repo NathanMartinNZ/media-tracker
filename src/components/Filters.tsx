@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { toTitleCase } from "../helpers";
 
 const Filters = ({
@@ -13,7 +13,23 @@ const Filters = ({
     }>
   >;
 }) => {
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
+
+  useEffect(() => {
+    function handleClickOutside(event: Event) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowDropdown(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [dropdownRef]);
 
   const handleShowDropdown = () => {
     setShowDropdown(!showDropdown);
@@ -24,7 +40,7 @@ const Filters = ({
       <button
         onClick={handleShowDropdown}
         data-dropdown-toggle="dropdown"
-        className="rounded-xl bg-slate-700 px-8 py-3 font-semibold text-white no-underline transition hover:bg-slate-600 inline-flex items-center"
+        className="inline-flex items-center rounded-xl bg-slate-700 px-8 py-3 font-semibold text-white no-underline transition hover:bg-slate-600"
         type="button"
       >
         Filters
@@ -45,19 +61,22 @@ const Filters = ({
         </svg>
       </button>
       {showDropdown && (
-        <div className="absolute left-auto translate-x-1/4 md:left-0 md:translate-x-0 top-14 z-10 w-56 rounded-lg bg-white p-3 shadow dark:bg-gray-700">
+        <div
+          ref={dropdownRef}
+          className="absolute left-auto top-14 z-10 w-56 translate-x-1/4 rounded-lg bg-white p-3 shadow dark:bg-gray-700 md:left-0 md:translate-x-0"
+        >
           <h6 className="mb-3 text-sm font-medium text-gray-900 dark:text-white">
             Type of media
           </h6>
           <ul className="space-y-2 text-sm" aria-labelledby="dropdownDefault">
-            {["both", "movies", "shows"].map((t:string) => (
+            {["both", "movies", "shows"].map((t: string) => (
               <li className="flex items-center" key={t}>
                 <input
                   id={t}
                   type="radio"
                   value={t}
                   checked={filters.typeOfMedia === t}
-                  onChange={() => setFilters({...filters, typeOfMedia: t})}
+                  onChange={() => setFilters({ ...filters, typeOfMedia: t })}
                   className="text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 h-4 w-4 rounded border-gray-300 bg-gray-100 focus:ring-2 dark:border-gray-500 dark:bg-gray-600 dark:ring-offset-gray-700"
                 />
                 <label
@@ -69,18 +88,18 @@ const Filters = ({
               </li>
             ))}
           </ul>
-          <h6 className="mt-3 mb-3 text-sm font-medium text-gray-900 dark:text-white">
+          {/* <h6 className="mt-3 mb-3 text-sm font-medium text-gray-900 dark:text-white">
             Watched
           </h6>
           <ul className="space-y-2 text-sm" aria-labelledby="dropdownDefault">
-            {["both", "yes", "no"].map((t:string) => (
+            {["both", "yes", "no"].map((t: string) => (
               <li className="flex items-center" key={t}>
                 <input
                   id={t}
                   type="radio"
                   value={t}
                   checked={filters.watched === t}
-                  onChange={() => setFilters({...filters, watched: t})}
+                  onChange={() => setFilters({ ...filters, watched: t })}
                   className="text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 h-4 w-4 rounded border-gray-300 bg-gray-100 focus:ring-2 dark:border-gray-500 dark:bg-gray-600 dark:ring-offset-gray-700"
                 />
                 <label
@@ -91,7 +110,7 @@ const Filters = ({
                 </label>
               </li>
             ))}
-          </ul>
+          </ul> */}
         </div>
       )}
     </div>
