@@ -1,8 +1,11 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure, protectedProcedure } from "../trpc";
 import axios from "axios";
-import { AddedShow, Show } from "@prisma/client";
-import { fetchShowData, fetchSeasonsAndEpisodesData } from "../helpers/fetchRawData"
+import { AddedShow, Episode, Season, Show } from "@prisma/client";
+import {
+  fetchShowData,
+  fetchSeasonsAndEpisodesData,
+} from "../helpers/fetchRawData";
 import { randomUUID } from "crypto";
 
 export const showsRouter = createTRPCRouter({
@@ -12,11 +15,11 @@ export const showsRouter = createTRPCRouter({
         added: {
           some: {
             user_id: {
-              equals: input
-            }
-          }
-        }
-      }
+              equals: input,
+            },
+          },
+        },
+      },
     });
   }),
 
@@ -28,46 +31,57 @@ export const showsRouter = createTRPCRouter({
     });
   }),
 
-  getShowsBySearchTerm: publicProcedure.input(String).query(async ({ input }) => {
-    const fetchShows = async () => {
-      const shows = await axios.get(`https://api.themoviedb.org/3/search/tv?api_key=${process.env.TMDB_CLIENT_API}&language=en-US&page=1&include_adult=false&query=${input}`)
-      return shows.data
-    }
-    const showsData = await fetchShows()
-    return showsData
-  }),
+  getShowsBySearchTerm: publicProcedure
+    .input(String)
+    .query(async ({ input }) => {
+      const fetchShows = async () => {
+        const shows = await axios.get(
+          `https://api.themoviedb.org/3/search/tv?api_key=${process.env.TMDB_CLIENT_API}&language=en-US&page=1&include_adult=false&query=${input}`
+        );
+        return shows.data;
+      };
+      const showsData = await fetchShows();
+      return showsData;
+    }),
 
   addShowById: publicProcedure
     .input(z.object({ showId: z.number(), userId: z.string() }))
     .mutation(async ({ input, ctx }) => {
       const showAlreadyAdded = await ctx.prisma.show.findUnique({
         where: {
-          id: input.showId
-        }
-      })
-      if(!showAlreadyAdded) {
+          id: input.showId,
+        },
+      });
+      if (!showAlreadyAdded) {
         // Fetch show from TMDB
-        const showData:any = await fetchShowData(input.showId)
+        const showData: { show: Show; season_numbers: number[] } =
+          await fetchShowData(input.showId);
         // Fetch seasons & episodes from TMDB
-        const seasonsAndEpisodesData:any = await fetchSeasonsAndEpisodesData(showData.season_numbers, showData.show.id)
-  
+        const seasonsAndEpisodesData: {
+          seasons: Season[];
+          episodes: Episode[];
+        } = await fetchSeasonsAndEpisodesData(
+          showData.season_numbers,
+          showData.show.id
+        );
+
         // Create show
         await ctx.prisma.show.create({
-          data: showData.show
-        })
+          data: showData.show,
+        });
         // Create all seasons
-        if(seasonsAndEpisodesData.seasons.length) {
+        if (seasonsAndEpisodesData.seasons.length) {
           await ctx.prisma.season.createMany({
             data: seasonsAndEpisodesData.seasons,
-            skipDuplicates: true
-          })
+            skipDuplicates: true,
+          });
         }
         // Create all episodes
-        if(seasonsAndEpisodesData.episodes.length) {
+        if (seasonsAndEpisodesData.episodes.length) {
           await ctx.prisma.episode.createMany({
             data: seasonsAndEpisodesData.episodes,
-            skipDuplicates: true
-          })
+            skipDuplicates: true,
+          });
         }
       }
 
@@ -77,19 +91,89 @@ export const showsRouter = createTRPCRouter({
           id: randomUUID(),
           show_id: input.showId,
           user_id: input.userId,
-          timestamp: new Date()
-        } as AddedShow
-      })
+          timestamp: new Date(),
+        } as AddedShow,
+      });
 
-      return userAddedShow
+      return userAddedShow;
     }),
 
-  removeShowForUser: publicProcedure.input(z.object({ showId: z.number(), userId: z.string() })).mutation(({ input, ctx }) => {
-    return ctx.prisma.addedShow.deleteMany({
-      where: {
-        show_id: input.showId,
-        user_id: input.userId
+  removeShowForUser: publicProcedure
+    .input(z.object({ showId: z.number(), userId: z.string() }))
+    .mutation(({ input, ctx }) => {
+      return ctx.prisma.addedShow.deleteMany({
+        where: {
+          show_id: input.showId,
+          user_id: input.userId,
+        },
+      });
+    }),
+
+  checkShowForUpdates: publicProcedure
+    .input(z.object({ pw: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      // Stop if pw is incorrect
+      if (input.pw !== process.env.EXTERNAL_HOST_PW) {
+        return;
       }
-    });
-  }),
+
+      // Get all shows
+      const shows = await ctx.prisma.show.findMany();
+      const seasons = await ctx.prisma.season.findMany();
+      const episodes = await ctx.prisma.episode.findMany();
+
+      // Set map for seasons & episodes for later checking
+      const seasonsMap: Map<number, boolean> = new Map();
+      for (const season of seasons) {
+        seasonsMap.set(season.id, true);
+      }
+      const episodesMap: Map<number, boolean> = new Map();
+      for (const episode of episodes) {
+        episodesMap.set(episode.id, true);
+      }
+
+      // Loop through all shows to create new seasons & episodes
+      for (const show of shows) {
+        if (show.id === 69740) {
+          // Fetch show from TMDB
+          const latestShowData: { show: Show; season_numbers: number[] } =
+            await fetchShowData(show.id);
+          const latestSeasonsAndEpisodesData: {
+            seasons: Season[];
+            episodes: Episode[];
+          } = await fetchSeasonsAndEpisodesData(
+            latestShowData.season_numbers,
+            latestShowData.show.id
+          );
+          // New seasons & episodes to be created
+          const newSeasons = latestSeasonsAndEpisodesData.seasons.filter(
+            (latestSeason: Season) => !seasonsMap.get(latestSeason.id)
+          );
+          const newEpisodes = latestSeasonsAndEpisodesData.episodes.filter(
+            (latestEpisode: Episode) => !episodesMap.get(latestEpisode.id)
+          );
+          // Create new seasons if any
+          if (newSeasons.length) {
+            await ctx.prisma.season.createMany({
+              data: newSeasons,
+            });
+          }
+          // Create new episodes if any
+          if (newEpisodes.length) {
+            await ctx.prisma.episode.createMany({
+              data: newEpisodes,
+            });
+          }
+          // Update show if new seasons or episodes created
+          if (newSeasons.length || newEpisodes.length) {
+            await ctx.prisma.show.update({
+              where: { id: show.id },
+              data: latestShowData.show,
+            });
+          }
+        }
+      }
+
+      return { message: "All shows up to date" };
+    }),
 });

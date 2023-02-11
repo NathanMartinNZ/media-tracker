@@ -19,9 +19,33 @@ const config = {
         protocol: "https",
         hostname: "image.tmdb.org",
         port: "",
-        pathname: "/t/p/w200/**"
-      }
-    ]
-  }
+        pathname: "/t/p/w200/**",
+      },
+    ],
+  },
+  async headers() {
+    return [
+      {
+        source: "/api/trpc/shows.checkShowForUpdates",
+        headers: [
+          { key: "Access-Control-Allow-Credentials", value: "true" },
+          { key: "Access-Control-Allow-Origin", value: "*" },
+          {
+            key: "Content-Security-Policy",
+            value: `default-src 'self' ${process.env.EXTERNAL_HOST}`,
+          },
+          {
+            key: "Access-Control-Allow-Methods",
+            value: "GET,OPTIONS,PATCH,DELETE,POST,PUT",
+          },
+          {
+            key: "Access-Control-Allow-Headers",
+            value:
+              "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Authorization, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
+          },
+        ],
+      },
+    ];
+  },
 };
 export default config;
