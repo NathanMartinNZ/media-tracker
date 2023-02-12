@@ -30,9 +30,13 @@ const config = {
         headers: [
           { key: "Access-Control-Allow-Credentials", value: "true" },
           { key: "Access-Control-Allow-Origin", value: "*" },
+          // {
+          //   key: "Content-Security-Policy",
+          //   value: `default-src 'self' ${process.env.EXTERNAL_HOST}`,
+          // },
           {
-            key: "Content-Security-Policy",
-            value: `default-src 'self' ${process.env.EXTERNAL_HOST}`,
+            key: "Access-Control-Request-Method",
+            value: "*",
           },
           {
             key: "Access-Control-Allow-Methods",
@@ -40,8 +44,7 @@ const config = {
           },
           {
             key: "Access-Control-Allow-Headers",
-            value:
-              "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Authorization, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
+            value: "*",
           },
         ],
       },
