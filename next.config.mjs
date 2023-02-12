@@ -28,7 +28,6 @@ const config = {
       {
         source: "/api/trpc/shows.checkShowForUpdates",
         headers: [
-          { key: "Access-Control-Allow-Credentials", value: "true" },
           { key: "Access-Control-Allow-Origin", value: "*" },
           // {
           //   key: "Content-Security-Policy",
@@ -40,7 +39,7 @@ const config = {
           },
           {
             key: "Access-Control-Allow-Methods",
-            value: "GET,OPTIONS,PATCH,DELETE,POST,PUT",
+            value: "GET,OPTIONS,POST",
           },
           {
             key: "Access-Control-Allow-Headers",

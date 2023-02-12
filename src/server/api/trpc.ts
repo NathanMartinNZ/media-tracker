@@ -50,11 +50,6 @@ const createInnerTRPCContext = async (opts: CreateContextOptions) => {
 export const createTRPCContext = async (opts: CreateNextContextOptions) => {
   const { req, res } = opts;
 
-  // CUSTOM FOR CORS ISSUE
-  if (req.method === "OPTIONS") {
-    res.writeHead(200);
-  }
-
   // Get the session from the server using the unstable_getServerSession wrapper function
   const session = await getServerAuthSession({ req, res });
 
