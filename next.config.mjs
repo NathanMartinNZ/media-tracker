@@ -28,11 +28,12 @@ const config = {
       {
         source: "/api/trpc/shows.checkShowForUpdates",
         headers: [
+          { key: "Access-Control-Allow-Credentials", value: "true" },
           { key: "Access-Control-Allow-Origin", value: "*" },
-          // {
-          //   key: "Content-Security-Policy",
-          //   value: `default-src 'self' ${process.env.EXTERNAL_HOST}`,
-          // },
+          {
+            key: "Content-Security-Policy",
+            value: `default-src 'self' ${process.env.EXTERNAL_HOST}`,
+          },
           {
             key: "Access-Control-Request-Method",
             value: "*",

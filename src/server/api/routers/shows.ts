@@ -111,33 +111,43 @@ export const showsRouter = createTRPCRouter({
 
   checkShowForUpdates: publicProcedure
     .input(z.object({ pw: z.string() }))
-    .mutation(async ({ input, ctx }) => {
+    .query(({ input, ctx }) => {
       // Stop if pw is incorrect
       if (input.pw !== process.env.EXTERNAL_HOST_PW) {
-        return;
+        return { message: "Failed to authenticate" };
       }
 
-      // Get all shows
-      const shows = await ctx.prisma.show.findMany();
-      const seasons = await ctx.prisma.season.findMany();
-      const episodes = await ctx.prisma.episode.findMany();
+      // Run non-blocking tasks
+      setTimeout(async () => {
+        // Get all shows
+        const shows = await ctx.prisma.show.findMany();
+        const seasons = await ctx.prisma.season.findMany();
+        const episodes = await ctx.prisma.episode.findMany();
 
-      // Set map for seasons & episodes for later checking
-      const seasonsMap: Map<number, boolean> = new Map();
-      for (const season of seasons) {
-        seasonsMap.set(season.id, true);
-      }
-      const episodesMap: Map<number, boolean> = new Map();
-      for (const episode of episodes) {
-        episodesMap.set(episode.id, true);
-      }
+        // Set map for seasons & episodes for later checking
+        const seasonsMap: Map<number, boolean> = new Map();
+        for (const season of seasons) {
+          seasonsMap.set(season.id, true);
+        }
+        const episodesMap: Map<number, boolean> = new Map();
+        for (const episode of episodes) {
+          episodesMap.set(episode.id, true);
+        }
 
-      // Loop through all shows to create new seasons & episodes
-      for (const show of shows) {
-        if (show.id === 69740) {
+        // Loop through all shows to create new seasons & episodes
+        for (const show of shows) {
           // Fetch show from TMDB
           const latestShowData: { show: Show; season_numbers: number[] } =
             await fetchShowData(show.id);
+
+          // Skip if no new seasons or episodes
+          if (
+            show.number_of_seasons === latestShowData.show.number_of_seasons &&
+            show.number_of_episodes === latestShowData.show.number_of_episodes
+          ) {
+            continue;
+          }
+
           const latestSeasonsAndEpisodesData: {
             seasons: Season[];
             episodes: Episode[];
@@ -172,8 +182,9 @@ export const showsRouter = createTRPCRouter({
             });
           }
         }
-      }
+      }, 0);
 
-      return { message: "All shows up to date" };
+      // Return response straight away
+      return { message: "Job started" };
     }),
 });
