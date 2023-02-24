@@ -18,10 +18,10 @@ const SignIn = () => {
               </h1>
               <div className="flex gap-4 p-4">
                 <button
-                  onClick={() => signIn()}
+                  onClick={() => signIn("google")}
                   className="btn-primary btn py-4"
                 >
-                  Sign in
+                  Sign in with Google
                 </button>
               </div>
             </div>
