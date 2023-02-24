@@ -1,0 +1,15 @@
+{
+  "short_name": "MT",
+  "name": "Media Tracker",
+  "icons": [
+    {
+      "src": "/favicon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#c6f",
+  "background_color": "#27075b"
+}
