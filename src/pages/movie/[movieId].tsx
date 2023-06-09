@@ -76,7 +76,7 @@ export const MoviePage = ({ movieId }: { movieId: number }) => {
         <meta name="description" content="" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex min-h-screen flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
+      <main className="flex min-h-screen flex-col items-center">
         <div className="container flex flex-col items-center justify-center gap-8 px-4 py-8">
           <div className="flex w-full gap-4 lg:max-w-3xl">
             <Link

@@ -113,7 +113,7 @@ const Add = () => {
         <meta name="description" content="Add movie or show" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex min-h-screen flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
+      <main className="flex min-h-screen flex-col items-center">
         <div className="container flex flex-col items-center justify-center gap-8 px-4 pt-8 pb-16">
           <div className="w-full gap-4 lg:max-w-3xl">
             <Link
@@ -133,20 +133,23 @@ const Add = () => {
             >
               <input
                 type="search"
-                className="w-full rounded-lg px-3 py-3 md:w-auto"
+                className="w-full rounded-xl bg-slate-700 px-3 py-3 font-semibold text-white no-underline transition hover:bg-slate-600 md:w-auto"
                 name="addSearch"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
               <select
-                className="grow rounded-lg px-3 text-center"
+                className="grow rounded-xl bg-slate-700 px-3 py-3 text-center font-semibold text-white no-underline transition hover:bg-slate-600 md:w-auto"
                 value={selectedType}
                 onChange={(e) => setSelectedType(e.target.value)}
               >
                 <option value="movie">Movie</option>
                 <option value="show">Show</option>
               </select>
-              <button type="submit" className="btn grow py-4">
+              <button
+                type="submit"
+                className="rounded-xl bg-white/10 px-8 py-3 font-semibold text-white no-underline transition hover:bg-white/20"
+              >
                 Search
               </button>
             </form>
@@ -156,7 +159,7 @@ const Add = () => {
               searchResults.results &&
               searchResults.results.map((result: any) => (
                 <div key={result.id} className="max-w-[200px]">
-                  <div className="card rounded-xl bg-gray-300 shadow-xl hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700">
+                  <div className="dhover:bg-gray-700 card rounded-xl bg-gray-800 text-white shadow-xl">
                     {result.poster_path && (
                       <figure>
                         <Image

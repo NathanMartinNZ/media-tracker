@@ -61,7 +61,7 @@ const Home: NextPage = () => {
               filteredMedia &&
               filteredMedia.map((media: Movie | Show) => (
                 <div key={media.id} className="max-w-[200px]">
-                  <div className="card rounded-xl bg-gray-300 shadow-xl hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700">
+                  <div className="card rounded-xl bg-gray-800 text-white shadow-xl hover:bg-gray-700">
                     {media.poster_path && (
                       <figure>
                         <Image
